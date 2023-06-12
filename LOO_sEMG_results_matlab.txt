@@ -1,0 +1,367 @@
+Left Out percentage: 1.00
+
+Testing Subject: R044
+VFI-1 Score: 0
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.994394
+Validation Accuracy: 0.975953
+Testing Accuracy: 0.084848
+
+Testing Subject: R041
+VFI-1 Score: 2
+# of Healthy Samples 3038
+# of Fatigued Samples 3270
+Left-out Test Samples 164
+Training Accuracy: 0.990686
+Validation Accuracy: 0.979221
+Testing Accuracy: 0.908537
+
+Testing Subject: R081
+VFI-1 Score: 0
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.991153
+Validation Accuracy: 0.974603
+Testing Accuracy: 0.527273
+
+Testing Subject: R085
+VFI-1 Score: 1
+# of Healthy Samples 3040
+# of Fatigued Samples 3270
+Left-out Test Samples 162
+Training Accuracy: 0.990742
+Validation Accuracy: 0.969797
+Testing Accuracy: 0.679012
+
+Testing Subject: R008
+VFI-1 Score: 3
+# of Healthy Samples 3040
+# of Fatigued Samples 3270
+Left-out Test Samples 162
+Training Accuracy: 0.990886
+Validation Accuracy: 0.980983
+Testing Accuracy: 0.407407
+
+Testing Subject: R024
+VFI-1 Score: 4
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.991717
+Validation Accuracy: 0.975909
+Testing Accuracy: 0.757576
+
+Testing Subject: R034
+VFI-1 Score: 0
+# of Healthy Samples 3039
+# of Fatigued Samples 3270
+Left-out Test Samples 163
+Training Accuracy: 0.992352
+Validation Accuracy: 0.983893
+Testing Accuracy: 0.276074
+
+Testing Subject: R029
+VFI-1 Score: 1
+# of Healthy Samples 3052
+# of Fatigued Samples 3270
+Left-out Test Samples 150
+Training Accuracy: 0.990221
+Validation Accuracy: 0.990502
+Testing Accuracy: 0.966667
+
+Testing Subject: R052
+VFI-1 Score: 1
+# of Healthy Samples 3038
+# of Fatigued Samples 3270
+Left-out Test Samples 164
+Training Accuracy: 0.993951
+Validation Accuracy: 0.980811
+Testing Accuracy: 0.524390
+
+Testing Subject: R039
+VFI-1 Score: 4
+# of Healthy Samples 3039
+# of Fatigued Samples 3270
+Left-out Test Samples 163
+Training Accuracy: 0.992124
+Validation Accuracy: 0.985566
+Testing Accuracy: 0.368098
+
+Testing Subject: R088
+VFI-1 Score: 4
+# of Healthy Samples 3038
+# of Fatigued Samples 3270
+Left-out Test Samples 164
+Training Accuracy: 0.991025
+Validation Accuracy: 0.985898
+Testing Accuracy: 0.963415
+
+Testing Subject: R092
+VFI-1 Score: 4
+# of Healthy Samples 3044
+# of Fatigued Samples 3270
+Left-out Test Samples 158
+Training Accuracy: 0.991075
+Validation Accuracy: 0.963562
+Testing Accuracy: 0.202532
+
+Testing Subject: R016
+VFI-1 Score: 4
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.990370
+Validation Accuracy: 0.977867
+Testing Accuracy: 0.987879
+
+Testing Subject: R002
+VFI-1 Score: 0
+# of Healthy Samples 3042
+# of Fatigued Samples 3270
+Left-out Test Samples 160
+Training Accuracy: 0.990742
+Validation Accuracy: 0.969623
+Testing Accuracy: 0.331250
+
+Testing Subject: R084
+VFI-1 Score: 1
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.990029
+Validation Accuracy: 0.972572
+Testing Accuracy: 0.575758
+
+Testing Subject: R040
+VFI-1 Score: 4
+# of Healthy Samples 3039
+# of Fatigued Samples 3270
+Left-out Test Samples 163
+Training Accuracy: 0.990221
+Validation Accuracy: 0.984205
+Testing Accuracy: 0.987730
+
+Testing Subject: R037
+VFI-1 Score: 0
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.990513
+Validation Accuracy: 0.970026
+Testing Accuracy: 1.000000
+
+Testing Subject: R090
+VFI-1 Score: 3
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.991060
+Validation Accuracy: 0.970596
+Testing Accuracy: 0.963636
+
+Testing Subject: R061
+VFI-1 Score: 2
+# of Healthy Samples 3037
+# of Fatigued Samples 3270
+Left-out Test Samples 165
+Training Accuracy: 0.990874
+Validation Accuracy: 0.961818
+Testing Accuracy: 0.454545
+
+Testing Subject: R010
+VFI-1 Score: 4
+# of Healthy Samples 3093
+# of Fatigued Samples 3270
+Left-out Test Samples 109
+Training Accuracy: 0.990624
+Validation Accuracy: 0.975755
+Testing Accuracy: 0.532110
+
+Testing Subject: R057
+VFI-1 Score: 17
+# of Healthy Samples 3202
+# of Fatigued Samples 3118
+Left-out Test Samples 152
+Training Accuracy: 0.989632
+Validation Accuracy: 0.965243
+Testing Accuracy: 0.513158
+
+Testing Subject: R058
+VFI-1 Score: 11
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990498
+Validation Accuracy: 0.978069
+Testing Accuracy: 0.569697
+
+Testing Subject: R011
+VFI-1 Score: 23
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990471
+Validation Accuracy: 0.982712
+Testing Accuracy: 0.145455
+
+Testing Subject: R019
+VFI-1 Score: 22
+# of Healthy Samples 3202
+# of Fatigued Samples 3110
+Left-out Test Samples 160
+Training Accuracy: 0.989788
+Validation Accuracy: 0.974658
+Testing Accuracy: 0.525000
+
+Testing Subject: R021
+VFI-1 Score: 18
+# of Healthy Samples 3202
+# of Fatigued Samples 3106
+Left-out Test Samples 164
+Training Accuracy: 0.990632
+Validation Accuracy: 0.977844
+Testing Accuracy: 0.335366
+
+Testing Subject: R030
+VFI-1 Score: 11
+# of Healthy Samples 3202
+# of Fatigued Samples 3106
+Left-out Test Samples 164
+Training Accuracy: 0.992602
+Validation Accuracy: 0.987234
+Testing Accuracy: 0.207317
+
+Testing Subject: R032
+VFI-1 Score: 11
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.991028
+Validation Accuracy: 0.980897
+Testing Accuracy: 0.915152
+
+Testing Subject: R043
+VFI-1 Score: 19
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990138
+Validation Accuracy: 0.974703
+Testing Accuracy: 0.757576
+
+Testing Subject: R045
+VFI-1 Score: 20
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990665
+Validation Accuracy: 0.974779
+Testing Accuracy: 0.963636
+
+Testing Subject: R047
+VFI-1 Score: 24
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.995043
+Validation Accuracy: 0.980972
+Testing Accuracy: 0.503030
+
+Testing Subject: R083
+VFI-1 Score: 15
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990476
+Validation Accuracy: 0.969635
+Testing Accuracy: 0.290909
+
+Testing Subject: R071
+VFI-1 Score: 13
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.989620
+Validation Accuracy: 0.974622
+Testing Accuracy: 0.993939
+
+Testing Subject: R055
+VFI-1 Score: 14
+# of Healthy Samples 3202
+# of Fatigued Samples 3107
+Left-out Test Samples 163
+Training Accuracy: 0.990655
+Validation Accuracy: 0.979180
+Testing Accuracy: 0.963190
+
+Testing Subject: R050
+VFI-1 Score: 17
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990296
+Validation Accuracy: 0.973032
+Testing Accuracy: 0.872727
+
+Testing Subject: R063
+VFI-1 Score: 23
+# of Healthy Samples 3202
+# of Fatigued Samples 3108
+Left-out Test Samples 162
+Training Accuracy: 0.991193
+Validation Accuracy: 0.981015
+Testing Accuracy: 0.703704
+
+Testing Subject: R056
+VFI-1 Score: 28
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990318
+Validation Accuracy: 0.968284
+Testing Accuracy: 1.000000
+
+Testing Subject: R059
+VFI-1 Score: 20
+# of Healthy Samples 3202
+# of Fatigued Samples 3105
+Left-out Test Samples 165
+Training Accuracy: 0.990665
+Validation Accuracy: 0.975390
+Testing Accuracy: 1.000000
+
+Testing Subject: R069
+VFI-1 Score: 11
+# of Healthy Samples 3202
+# of Fatigued Samples 3108
+Left-out Test Samples 162
+Training Accuracy: 0.990834
+Validation Accuracy: 0.966607
+Testing Accuracy: 0.765432
+
+Testing Subject: R046
+VFI-1 Score: 18
+# of Healthy Samples 3202
+# of Fatigued Samples 3106
+Left-out Test Samples 164
+Training Accuracy: 0.995270
+Validation Accuracy: 0.981212
+Testing Accuracy: 0.518293
+
+Testing Subject: R049
+VFI-1 Score: 28
+# of Healthy Samples 3202
+# of Fatigued Samples 3106
+Left-out Test Samples 164
+Training Accuracy: 0.991301
+Validation Accuracy: 0.979392
+Testing Accuracy: 0.621951
+
+Average Training Accuracy: 99.11%
+Average Validation Accuracy: 97.64%
+Average Testing Accuracy: 64.16%
+Sensitivity(True Positive): 0.6249
+Specificity(True Negative): 0.6583

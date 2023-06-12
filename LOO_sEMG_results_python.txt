@@ -1,0 +1,484 @@
+
+===Exp No. 1===
+
+Test Subject R044:
+VFI-1: [0]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9695207892882312
+Validation Acc:  0.9635499207606973
+Testing Acc:  0.20606060606060606
+
+===Exp No. 2===
+
+Test Subject R041:
+VFI-1: [2]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3038
+# of Fatigued Samples: 3270
+Training Acc:  0.9531442663378545
+Validation Acc:  0.9429477020602218
+Testing Acc:  0.9573170731707317
+
+===Exp No. 3===
+
+Test Subject R081:
+VFI-1: [0]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9589499647639183
+Validation Acc:  0.9540412044374009
+Testing Acc:  0.7090909090909091
+
+===Exp No. 4===
+
+Test Subject R085:
+VFI-1: [1]
+Left-out Test samples:  162
+Included Training samples:  0
+# of Healthy Samples: 3040
+# of Fatigued Samples: 3270
+Training Acc:  0.9535129424194401
+Validation Acc:  0.9492868462757528
+Testing Acc:  0.5185185185185185
+
+===Exp No. 5===
+
+Test Subject R008:
+VFI-1: [3]
+Left-out Test samples:  162
+Included Training samples:  0
+# of Healthy Samples: 3040
+# of Fatigued Samples: 3270
+Training Acc:  0.9505194576509949
+Validation Acc:  0.9445324881141046
+Testing Acc:  0.8765432098765432
+
+===Exp No. 6===
+
+Test Subject R024:
+VFI-1: [4]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9564834390415786
+Validation Acc:  0.9461172741679873
+Testing Acc:  0.9939393939393939
+
+===Exp No. 7===
+
+Test Subject R034:
+VFI-1: [0]
+Left-out Test samples:  163
+Included Training samples:  0
+# of Healthy Samples: 3039
+# of Fatigued Samples: 3270
+Training Acc:  0.9533286368439592
+Validation Acc:  0.9508716323296355
+Testing Acc:  0.27607361963190186
+
+===Exp No. 8===
+
+Test Subject R029:
+VFI-1: [1]
+Left-out Test samples:  150
+Included Training samples:  0
+# of Healthy Samples: 3052
+# of Fatigued Samples: 3270
+Training Acc:  0.9592195464932326
+Validation Acc:  0.9605055292259084
+Testing Acc:  0.94
+
+===Exp No. 9===
+
+Test Subject R052:
+VFI-1: [1]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3038
+# of Fatigued Samples: 3270
+Training Acc:  0.9621278844460102
+Validation Acc:  0.9540412044374009
+Testing Acc:  0.5060975609756098
+
+===Exp No. 10===
+
+Test Subject R039:
+VFI-1: [4]
+Left-out Test samples:  163
+Included Training samples:  0
+# of Healthy Samples: 3039
+# of Fatigued Samples: 3270
+Training Acc:  0.9598450158506516
+Validation Acc:  0.9524564183835182
+Testing Acc:  0.4171779141104294
+
+===Exp No. 11===
+
+Test Subject R088:
+VFI-1: [4]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3038
+# of Fatigued Samples: 3270
+Training Acc:  0.9570195525805884
+Validation Acc:  0.9334389857369255
+Testing Acc:  1.0
+
+===Exp No. 12===
+
+Test Subject R092:
+VFI-1: [4]
+Left-out Test samples:  158
+Included Training samples:  0
+# of Healthy Samples: 3044
+# of Fatigued Samples: 3270
+Training Acc:  0.9577613516367476
+Validation Acc:  0.9319620253164557
+Testing Acc:  0.2721518987341772
+
+===Exp No. 13===
+
+Test Subject R016:
+VFI-1: [4]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9556025369978859
+Validation Acc:  0.9477020602218701
+Testing Acc:  1.0
+
+===Exp No. 14===
+
+Test Subject R002:
+VFI-1: [0]
+Left-out Test samples:  160
+Included Training samples:  0
+# of Healthy Samples: 3042
+# of Fatigued Samples: 3270
+Training Acc:  0.9568661971830986
+Validation Acc:  0.935126582278481
+Testing Acc:  0.83125
+
+===Exp No. 15===
+
+Test Subject R084:
+VFI-1: [1]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9591261451726568
+Validation Acc:  0.9381933438985737
+Testing Acc:  0.7212121212121212
+
+===Exp No. 16===
+
+Test Subject R040:
+VFI-1: [4]
+Left-out Test samples:  163
+Included Training samples:  0
+# of Healthy Samples: 3039
+# of Fatigued Samples: 3270
+Training Acc:  0.9528002817893625
+Validation Acc:  0.9381933438985737
+Testing Acc:  1.0
+
+===Exp No. 17===
+
+Test Subject R037:
+VFI-1: [0]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9492600422832981
+Validation Acc:  0.93026941362916
+Testing Acc:  1.0
+
+===Exp No. 18===
+
+Test Subject R090:
+VFI-1: [3]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9538407329105003
+Validation Acc:  0.9445324881141046
+Testing Acc:  0.9757575757575757
+
+===Exp No. 19===
+
+Test Subject R061:
+VFI-1: [2]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3037
+# of Fatigued Samples: 3270
+Training Acc:  0.9575405214940098
+Validation Acc:  0.9477020602218701
+Testing Acc:  0.896969696969697
+
+===Exp No. 20===
+
+Test Subject R010:
+VFI-1: [4]
+Left-out Test samples:  109
+Included Training samples:  0
+# of Healthy Samples: 3093
+# of Fatigued Samples: 3270
+Training Acc:  0.9537198742577716
+Validation Acc:  0.9340659340659341
+Testing Acc:  1.0
+
+===Exp No. 21===
+
+Test Subject R057:
+VFI-1: [17]
+Left-out Test samples:  152
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3118
+Training Acc:  0.9511251758087201
+Validation Acc:  0.9319620253164557
+Testing Acc:  0.881578947368421
+
+===Exp No. 22===
+
+Test Subject R058:
+VFI-1: [11]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9538407329105003
+Validation Acc:  0.9413629160063391
+Testing Acc:  0.6242424242424243
+
+===Exp No. 23===
+
+Test Subject R011:
+VFI-1: [23]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9545454545454546
+Validation Acc:  0.9445324881141046
+Testing Acc:  0.21818181818181817
+
+===Exp No. 24===
+
+Test Subject R019:
+VFI-1: [22]
+Left-out Test samples:  160
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3110
+Training Acc:  0.956338028169014
+Validation Acc:  0.9224683544303798
+Testing Acc:  0.48125
+
+===Exp No. 25===
+
+Test Subject R021:
+VFI-1: [18]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3106
+Training Acc:  0.9575480007045974
+Validation Acc:  0.9445324881141046
+Testing Acc:  0.6524390243902439
+
+===Exp No. 26===
+
+Test Subject R030:
+VFI-1: [11]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3106
+Training Acc:  0.9645939756913863
+Validation Acc:  0.9540412044374009
+Testing Acc:  0.2073170731707317
+
+===Exp No. 27===
+
+Test Subject R032:
+VFI-1: [11]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9545454545454546
+Validation Acc:  0.936608557844691
+Testing Acc:  1.0
+
+===Exp No. 28===
+
+Test Subject R043:
+VFI-1: [19]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9511980267794221
+Validation Acc:  0.9350237717908082
+Testing Acc:  0.9515151515151515
+
+===Exp No. 29===
+
+Test Subject R045:
+VFI-1: [20]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9552501761804087
+Validation Acc:  0.9318541996830428
+Testing Acc:  1.0
+
+===Exp No. 30===
+
+Test Subject R047:
+VFI-1: [24]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9612403100775194
+Validation Acc:  0.9461172741679873
+Testing Acc:  0.6424242424242425
+
+===Exp No. 31===
+
+Test Subject R083:
+VFI-1: [15]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9589499647639183
+Validation Acc:  0.9413629160063391
+Testing Acc:  0.23636363636363636
+
+===Exp No. 32===
+
+Test Subject R071:
+VFI-1: [13]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.954369274136716
+Validation Acc:  0.9381933438985737
+Testing Acc:  1.0
+
+===Exp No. 33===
+
+Test Subject R055:
+VFI-1: [14]
+Left-out Test samples:  163
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3107
+Training Acc:  0.9513913349771046
+Validation Acc:  0.9397781299524565
+Testing Acc:  1.0
+
+===Exp No. 34===
+
+Test Subject R050:
+VFI-1: [17]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9529598308668076
+Validation Acc:  0.9318541996830428
+Testing Acc:  0.9030303030303031
+
+===Exp No. 35===
+
+Test Subject R063:
+VFI-1: [23]
+Left-out Test samples:  162
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3108
+Training Acc:  0.9515759816869167
+Validation Acc:  0.9429477020602218
+Testing Acc:  0.7222222222222222
+
+===Exp No. 36===
+
+Test Subject R056:
+VFI-1: [28]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9533121916842847
+Validation Acc:  0.9318541996830428
+Testing Acc:  1.0
+
+===Exp No. 37===
+
+Test Subject R059:
+VFI-1: [20]
+Left-out Test samples:  165
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3105
+Training Acc:  0.9540169133192389
+Validation Acc:  0.9381933438985737
+Testing Acc:  1.0
+
+===Exp No. 38===
+
+Test Subject R069:
+VFI-1: [11]
+Left-out Test samples:  162
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3108
+Training Acc:  0.9554499031519633
+Validation Acc:  0.9318541996830428
+Testing Acc:  0.7160493827160493
+
+===Exp No. 39===
+
+Test Subject R046:
+VFI-1: [18]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3106
+Training Acc:  0.9605425400739828
+Validation Acc:  0.9477020602218701
+Testing Acc:  0.7378048780487805
+
+===Exp No. 40===
+
+Test Subject R049:
+VFI-1: [28]
+Left-out Test samples:  164
+Included Training samples:  0
+# of Healthy Samples: 3202
+# of Fatigued Samples: 3106
+Training Acc:  0.9568434032059187
+Validation Acc:  0.9461172741679873
+Testing Acc:  0.8048780487804879
+Train    0.955996
+Valid    0.941947
+Test     0.746936
+dtype: float64
