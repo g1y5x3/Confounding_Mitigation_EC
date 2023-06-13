@@ -1,28 +1,19 @@
 # GA-SVM for Confounding Mitigation
 
-Foobar is a Python library for dealing with word pluralization.
+This is a collection of python/Matlab scripts that implements GA-SVM algorithm for 
+confounding removal.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
 ```bash
-pip install foobar
+pip install -U pymoo
 ```
 
 ## Usage
 
 ```python
-import foobar
 
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
 ```
 
 ## Contributing
