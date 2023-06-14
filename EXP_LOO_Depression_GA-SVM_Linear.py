@@ -3,27 +3,58 @@
 
 import pandas as pd
 import numpy as np
+import numpy.matlib
+import multiprocessing
 
 from sklearn.svm import LinearSVC, SVC
 from sklearn.metrics import accuracy_score
+from statsmodels.formula.api import ols
 from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.core.problem import ElementwiseProblem
+from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
+from multiprocessing.pool import ThreadPool
 
-class MyProblem(Problem):
+class MyProblem(ElementwiseProblem):
 
-    def __init__(self):
-        super().__init__(n_var=36, n_obj=2)
+    def __init__(self, **kwargs):
+        super().__init__(n_var=36, 
+                         n_obj=2,
+                         n_constr=0,
+                         xl = -1*np.ones(36),
+                         xu = np.ones(36),
+                         **kwargs)
    
-    def load_data_svm(self, x_train, y_train, c_train, model):
+    def load_data_svm(self, x_train, y_train, c_train, clf):
+        # Load informations from the individual classification exerpiment 
+        # x_train - training features
+        # y_train - labels
+        # c_train - confounding variables
+        # model   - the trained svm model
         self.x_train = x_train
         self.y_train = y_train
         self.c_train = c_train
-        self.model   = model
+        self.clf     = clf
+
+        # dimension of the training feature
+        self.n = np.shape(x_train)[0]
+        self.d = np.shape(x_train)[1]
  
     def _evaluate(self, x, out, *args, **kwargs):
-        
+        # pymoo initialize the chromosome as a 1-D array which can be converted
+        # into matrix for element-wise weight multiplication
+        fw = np.matlib.repmat(x, self.n, 1)
+        x_train_tf = self.x_train * fw
 
+        # first objective is SVM loss
+        f1 = 1 - self.clf.score(x_train_tf, self.y_train)
+
+        # second objective is Rsquared from a linear regression
+        y_hat = self.clf.predict(x_train_tf)
+        df = pd.DataFrame({'x': self.c_train, 'y': y_hat})
+        fit = ols('y~C(x)', data=df).fit()
+        f2 = fit.rsquared.flatten()[0]
+
+        out['F'] = [f1, f2]
 
 data = pd.read_csv('data/pone.csv')
 
@@ -70,16 +101,20 @@ x = data[['pcm_intensity_sma_quartile1',
 
 y = data['iscase'].to_numpy()
 
+# Extract demographic info as confounder
+c = data['age'].to_numpy()
+
 training_acc = np.zeros((num_subject,1))
 testing_acc  = np.zeros((num_subject,1))
 
-for s in range(num_subject):
+for s in range(1):
     print('NO.{}: {}'.format(s, subject_all[s]))
     id_train = (subject_id != subject_all[s])
     id_test  = (subject_id == subject_all[s])
     
     x_train = x[id_train,:]
     y_train = y[id_train]
+    c_train = c[id_train]
     
     x_test  = x[id_test,:]
     y_test  = y[id_test]
@@ -95,6 +130,25 @@ for s in range(num_subject):
     label_predict = clf.predict(x_test)
     print('Testing Acc: ', accuracy_score(label_predict, y_test))
     testing_acc[s] = accuracy_score(label_predict, y_test)    
+
+    print('Genetic Algorithm Optimization...')
+    n_threads = 8
+    pool = ThreadPool(n_threads)
+    runner = StarmapParallelization(pool.starmap)
+
+    problem = MyProblem(elementwise_runner=runner)
+    problem.load_data_svm(x_train, y_train, c_train, clf)
+
+    algorithm = NSGA2(pop_size=128)
+
+    res = minimize(problem,
+                   algorithm,
+                   ("n_gen", 10),
+                   verbose=True)
+
+    print('Threads:', res.exec_time)
+
+    pool.close()
     
 print('Average Training Accuracy: {0:.2f}%'.format(100*np.mean(training_acc)))
 print('Average Testing Accuracy: {0:.2f}%'.format(100*np.mean(testing_acc)))
