@@ -1,3 +1,4 @@
 .ipynb_checkpoints
+.vscode
 data/subjects_40_v6.mat
 pymoo_test.py
