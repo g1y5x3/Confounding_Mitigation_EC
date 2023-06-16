@@ -81,7 +81,7 @@ for s = 1 : num_subject
 
     x_train  = x(id_train,:);
     y_train  = y(id_train);
-    c_train  = subject_id(id_train);
+    c_train  = c(id_train);
     
     x_test   = x(id_test,:);
     y_test   = y(id_test);
