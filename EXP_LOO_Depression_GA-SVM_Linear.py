@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import math
 import pandas as pd
 import numpy as np
