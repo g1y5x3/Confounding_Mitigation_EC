@@ -64,13 +64,16 @@ class MyProblem(ElementwiseProblem):
         # first objective is SVM loss
         f1 = 1 - self.clf.score(x_train_tf, self.y_train)
 
-        # second objective is Rsquared from a linear regression
+        # second objective is P Value from CPT  
         y_hat = self.clf.predict(x_train_tf)
-        df = pd.DataFrame({'x': self.c_train, 'y': y_hat})
-        fit = ols('y~C(x)', data=df).fit()
-        f2 = fit.rsquared.flatten()[0]
-        if math.isnan(f2) or f2 == 0:
-            f2 = 1
+        ret = partial_confound_test(self.y_train, y_hat, self.c_train,
+                                    cat_y=True, cat_yhat=True, cat_c=False,
+                                    cond_dist_method='gam', 
+                                    num_perms=1000, mcmc_steps=50,
+                                    n_jobs=-1,
+                                    progress=False)
+
+        f2 = ret.p 
 
         out['F'] = [f1, f2]
 
@@ -93,10 +96,10 @@ training_acc_ga = np.zeros(40)
 p_value_ga      = np.zeros(40)
 
 # subject_group_test = [0,20]
-config = {"num_generation"  : 40,
+config = {"num_generation"  : 1,
           "population_size" : 128}
 
-for sub_test in range(40):
+for sub_test in range(6,8):
     sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
     if int(VFI_1[sub_test][0][0]) > 10:
         sub_group = 'Fatigued'
@@ -104,7 +107,7 @@ for sub_test in range(40):
         sub_group = 'Healthy'
 
     run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
-                     group    = 'experiment_2',
+                     group    = 'experiment_opt_p_value',
                      config   = config,
                      name     = sub_txt,
                      tags     = [sub_group],
@@ -177,9 +180,10 @@ for sub_test in range(40):
     p_value[sub_test] = ret.p
     print('P Value     : ', p_value[sub_test])
 
-    # label_predict = clf.predict(X_Valid)
-    # print('Valid    Acc: ', accuracy_score(label_predict, Y_Valid))
-    # valid_acc[sub_test] = accuracy_score(label_predict, Y_Valid)
+    # Evalute rsquared
+    df = pd.DataFrame({'x': C_Train, 'y': Y_Train})
+    fit = ols('y~C(x)', data=df).fit()
+    rsqrd = fit.rsquared.flatten()[0]
 
     label_predict = clf.predict(X_Test)
     print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
@@ -187,6 +191,7 @@ for sub_test in range(40):
 
     wandb.log({"metrics/train_acc" : training_acc[sub_test],
                "metrics/test_acc"  : testing_acc[sub_test],
+               "metrics/rsquare"   : rsqrd,
                "metrics/p_value"   : p_value[sub_test]})
 
     print('Genetic Algorithm Optimization...')
@@ -266,7 +271,7 @@ for sub_test in range(40):
         # Detect if the current chromosome gives the best predictio`n
         if temp_tr_acc > training_acc_best and temp_p_value > 0.05:
             training_acc_best         = temp_tr_acc 
-            
+
             training_acc_ga[sub_test] = temp_tr_acc 
             p_value_ga[sub_test]      = temp_p_value
             testing_acc_ga[sub_test]  = temp_te_acc
