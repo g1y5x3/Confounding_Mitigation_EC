@@ -1,5 +1,6 @@
 .ipynb_checkpoints
 .vscode
+wandb
 data/voiceFeats.mat
 data/subjects_40_v6.mat
 pymoo_test.py

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import math
+import wandb
 import scipy.io as sio
 import numpy as np
 import numpy.matlib
@@ -81,7 +82,6 @@ VFI_1            = DATA_ALL['SUBJECT_VFI']
 SUBJECT_ID       = DATA_ALL['SUBJECT_ID']        # Sujbect ID
 SUBJECT_SKINFOLD = DATA_ALL['SUBJECT_SKINFOLD']
 
-
 leftout = 1
 # valid_acc    = np.zeros(40)
 testing_acc  = np.zeros(40)
@@ -92,15 +92,29 @@ testing_acc_ga  = np.zeros(40)
 training_acc_ga = np.zeros(40)
 p_value_ga      = np.zeros(40)
 
+# subject_group_test = [0,20]
+config = {"num_generation"  : 40,
+          "population_size" : 128}
+
 for sub_test in range(40):
     sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
-    print('\n===No.%d: %s===\n'%(sub_test+1, sub_txt)) 
-    # print('Test Subject %s:'%(sub_txt))
-    print('VFI-1:', (VFI_1[sub_test][0][0]))
     if int(VFI_1[sub_test][0][0]) > 10:
         sub_group = 'Fatigued'
     else:
         sub_group = 'Healthy'
+
+    run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
+                     group    = 'experiment_2',
+                     config   = config,
+                     name     = sub_txt,
+                     tags     = [sub_group],
+                     settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
+                     reinit   = True)
+
+    print('\n===No.%d: %s===\n'%(sub_test+1, sub_txt)) 
+    print('VFI-1:', (VFI_1[sub_test][0][0]))
+
+    wandb.log({"subject_info/vfi_1"  : int(VFI_1[sub_test][0][0])})
 
     # ===== Load Testing Signals =====
     num_signal = np.shape(FEAT_N[sub_test,0])[0]    
@@ -131,7 +145,6 @@ for sub_test in range(40):
             x_s = FEAT_N[sub_train,0]
             y_s = LABEL[sub_train,0].flatten()
             c_s = np.mean(np.mean(SUBJECT_SKINFOLD[sub_train,:]), axis=1)
-            # ===== CAN BE CONVERTED INTO A FUNCTION =====
             X_TV = np.concatenate((X_TV, x_s), axis=0)
             Y_TV = np.concatenate((Y_TV, y_s), axis=0)
             C_TV = np.concatenate((C_TV, c_s), axis=0)       
@@ -172,6 +185,9 @@ for sub_test in range(40):
     print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
     testing_acc[sub_test] = accuracy_score(label_predict, Y_Test)
 
+    wandb.log({"metrics/train_acc" : training_acc[sub_test],
+               "metrics/test_acc"  : testing_acc[sub_test],
+               "metrics/p_value"   : p_value[sub_test]})
 
     print('Genetic Algorithm Optimization...')
     n_threads = 8
@@ -181,9 +197,12 @@ for sub_test in range(40):
     problem = MyProblem(elementwise_runner=runner)
     problem.load_data_svm(X_Train, Y_Train, C_Train, clf)
 
-    algorithm = NSGA2(pop_size=128)
+    num_generation = wandb.config["num_generation"]
+    population_size = wandb.config["population_size"]
+    
+    # Genetic algorithm initialization
+    algorithm = NSGA2(pop_size=population_size)
 
-    num_generation = 40
     res = minimize(problem,
                    algorithm,
                    ("n_gen", num_generation),
@@ -193,41 +212,76 @@ for sub_test in range(40):
     pool.close()
 
     # Plot the parento front
-    # plot = Scatter()
-    # plot.add(res.F, edgecolor='red', facecolor='None')
-    # plot.save('parento_front.png')
+    plt.figure()
+    plt.scatter(res.F[:,0], res.F[:,1], marker='o', 
+                                        edgecolors='red', 
+                                        facecolor='None' )
+    plt.xlabel("SVM loss")
+    plt.ylabel("Rsquared")
+    wandb.log({"plots/scatter_plot": wandb.Image(plt)})
+
+    # Log and save the weights
+    fw_dataframe = pd.DataFrame(res.X)
+    fw_table = wandb.Table(dataframe=fw_dataframe)
+    run.log({"feature weights": fw_table})
 
     # Evaluate the results discovered by GA
-    testing_acc_best = 0
+    Xid = np.argsort(res.F[:,0])
+    training_acc_best = 0
     for t in range(np.shape(res.X)[0]):
-        w = res.X[t,:]
-        
+        w = res.X[Xid[t],:]
+
+        # Evalute the training performance
+        n = np.shape(X_Train)[0]
+        fw = np.matlib.repmat(w, n, 1)
+        x_train_tf = X_Train * fw
+        Y_tf_train = clf.predict(x_train_tf)
+        # temp_tr_acc = accuracy_score(Y_tf_train, Y_Train)
+        temp_tr_acc = clf.score(x_train_tf, Y_Train)
+
+        # Evaluate the r squared
+        df = pd.DataFrame({'x': C_Train, 'y': Y_tf_train})
+        fit = ols('y~C(x)', data=df).fit()
+        temp_rsqrd = fit.rsquared.flatten()[0]
+ 
+        # Evaluate the p value from the current predicitons
+        ret_ga = partial_confound_test(Y_Train, Y_tf_train, C_Train, 
+                                cat_y=True, cat_yhat=True, cat_c=False,
+                                cond_dist_method='gam',
+                                progress=False)
+        temp_p_value = ret_ga.p
+
         # Evaluate the testing performance
         n = np.shape(X_Test)[0]
         fw = np.matlib.repmat(w, n, 1)
         x_test_tf = X_Test * fw
-        label_predict_tf = clf.predict(x_test_tf)
-        # Detect if the current chromosome gives the best prediction
-        if accuracy_score(label_predict_tf, Y_Test) > testing_acc_best:
-            testing_acc_best  = accuracy_score(label_predict_tf, Y_Test) 
-            testing_acc_ga[sub_test] = testing_acc_best
+        Y_tf_test = clf.predict(x_test_tf)
+        temp_te_acc = accuracy_score(Y_tf_test, Y_Test)
 
-            n = np.shape(X_Train)[0]
-            fw = np.matlib.repmat(w, n, 1)
-            x_train_tf = X_Train * fw
-            label_predict_tf_train = clf.predict(x_train_tf)
-            training_acc_ga[sub_test] = accuracy_score(label_predict_tf_train, Y_Train)
+        wandb.log({"pareto-front/train_acc": temp_tr_acc,
+                   "pareto-front/rsquare"  : temp_rsqrd,
+                   "pareto-front/p_value"  : temp_p_value,
+                   "pareto-front/test_acc" : temp_te_acc})
 
-    ret_ga = partial_confound_test(Y_Train, label_predict_tf_train, C_Train, 
-                                cat_y=True, cat_yhat=True, cat_c=False,
-                                cond_dist_method='gam',
-                                progress=False)
-    p_value_ga[sub_test] = ret_ga.p
+        # Detect if the current chromosome gives the best predictio`n
+        if temp_tr_acc > training_acc_best and temp_p_value > 0.05:
+            training_acc_best         = temp_tr_acc 
+            
+            training_acc_ga[sub_test] = temp_tr_acc 
+            p_value_ga[sub_test]      = temp_p_value
+            testing_acc_ga[sub_test]  = temp_te_acc
+
 
     print('Training Acc after GA: ', training_acc_ga[sub_test])
     print('P Value      after GA: ', p_value_ga[sub_test])
     print('Testing  Acc after GA: ', testing_acc_ga[sub_test])
 
+    wandb.log({"metrics/train_acc_ga": training_acc_ga[sub_test],
+               "metrics/test_acc_ga" : testing_acc_ga[sub_test],
+               "metrics/p_value_ga"  : p_value_ga[sub_test]})
+    
+    run.finish()
+             
 print('Before GA')
 print('Average Training Accuracy: {0:.2f}%'.format(100*np.mean(training_acc)))
 print('Average Testing Accuracy: {0:.2f}%'.format(100*np.mean(testing_acc)))
