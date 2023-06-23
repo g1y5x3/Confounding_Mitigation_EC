@@ -124,8 +124,9 @@ else:
     sub_group = 'Healthy'
 
 config = {"num_generation"  : 10,
-          "population_size" : 64,
-          "permutation"     : 500}
+          "population_size" : 128,
+          "permutation"     : 500,
+          "threads"         : 16}
 
 run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
                  group    = 'experiment_parallel',
@@ -216,17 +217,18 @@ wandb.log({"metrics/train_acc" : training_acc[sub_test],
            "metrics/p_value"   : p_value[sub_test]})
 
 print('Genetic Algorithm Optimization...')
-n_threads = 8
+
+num_permu       = wandb.config["permutation"]
+num_generation  = wandb.config["num_generation"]
+population_size = wandb.config["population_size"]
+threads_count   = wandb.config["threads"]
+
+n_threads = threads_count
 pool = ThreadPool(n_threads)
 runner = StarmapParallelization(pool.starmap)
 
 problem = MyProblem(elementwise_runner=runner)
-
-num_permu = wandb.config["permutation"]
 problem.load_data_svm(X_Train, Y_Train, C_Train, clf, num_permu)
-
-num_generation = wandb.config["num_generation"]
-population_size = wandb.config["population_size"]
 
 # Genetic algorithm initialization
 algorithm = NSGA2(pop_size  = population_size,
