@@ -63,7 +63,7 @@ class MyProblem(ElementwiseProblem):
         fw = np.matlib.repmat(x, self.n, 1)
         x_train_tf = self.x_train * fw
 
-        # first objective is SVM loss
+        # first objective is SVM training accuracy
         f1 = 1 - self.clf.score(x_train_tf, self.y_train)
 
         # second objective is P Value from CPT  
@@ -75,7 +75,7 @@ class MyProblem(ElementwiseProblem):
                                     n_jobs=-1,
                                     progress=False)
 
-        f2 = ret.p 
+        f2 = 1 - ret.p 
 
         out['F'] = [f1, f2]
 
@@ -83,12 +83,12 @@ class MyCallback(Callback):
     def __init__(self) -> None:
         super().__init__()
         self.data["best"] = []
-        
+
     def notify(self, algorithm):
         self.data["best"].append(algorithm.pop.get("F")[0].min())
-        wandb.log({"ga/n_gen"    : algorithm.n_gen,
-                   "ga/svm_loss" : algorithm.pop.get("F")[0].min(),
-                   "ga/p_value"  : algorithm.pop.get("F")[1].min()})
+        wandb.log({"ga/n_gen"     : algorithm.n_gen,
+                   "ga/train_acc" : algorithm.pop.get("F")[0].min(),
+                   "ga/p_value"   : algorithm.pop.get("F")[1].min()})
 
 DATA_ALL = sio.loadmat("data/subjects_40_v6.mat")
 
@@ -116,9 +116,9 @@ if int(VFI_1[sub_test][0][0]) > 10:
 else:
     sub_group = 'Healthy'
 
-config = {"num_generation"  : 5,
+config = {"num_generation"  : 10,
           "population_size" : 128,
-          "permutation"     : 100}
+          "permutation"     : 500}
 
 run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
                  group    = 'experiment_parallel',
@@ -204,9 +204,9 @@ print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
 testing_acc[sub_test] = accuracy_score(label_predict, Y_Test)
 
 wandb.log({"metrics/train_acc" : training_acc[sub_test],
-            "metrics/test_acc"  : testing_acc[sub_test],
-            "metrics/rsquare"   : rsqrd,
-            "metrics/p_value"   : p_value[sub_test]})
+            "metrics/test_acc" : testing_acc[sub_test],
+            "metrics/rsquare"  : rsqrd,
+            "metrics/p_value"  : p_value[sub_test]})
 
 print('Genetic Algorithm Optimization...')
 n_threads = 8
