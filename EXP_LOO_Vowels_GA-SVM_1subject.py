@@ -17,12 +17,19 @@ from mlconfound.stats import partial_confound_test
 from mlconfound.plot import plot_null_dist, plot_graph
 
 from statsmodels.formula.api import ols
+
+from multiprocessing.pool import ThreadPool
+
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
 from pymoo.visualization.scatter import Scatter
 from pymoo.core.callback import Callback
-from multiprocessing.pool import ThreadPool
+from pymoo.algorithms.base.genetic import GeneticAlgorithm
+from pymoo.operators.crossover.sbx import SBX
+from pymoo.operators.mutation.pm import PM
+from pymoo.operators.sampling.rnd import FloatRandomSampling
+from pymoo.util.display.multi import MultiObjectiveOutput
 
 
 # Just to eliminate the warnings
@@ -87,8 +94,8 @@ class MyCallback(Callback):
     def notify(self, algorithm):
         self.data["best"].append(algorithm.pop.get("F")[0].min())
         wandb.log({"ga/n_gen"     : algorithm.n_gen,
-                   "ga/train_acc" : algorithm.pop.get("F")[0].min(),
-                   "ga/p_value"   : algorithm.pop.get("F")[1].min()})
+                   "ga/1-train_acc" : algorithm.pop.get("F")[0].min(),
+                   "ga/1-p_value"   : algorithm.pop.get("F")[1].min()})
 
 DATA_ALL = sio.loadmat("data/subjects_40_v6.mat")
 
@@ -117,7 +124,7 @@ else:
     sub_group = 'Healthy'
 
 config = {"num_generation"  : 10,
-          "population_size" : 128,
+          "population_size" : 64,
           "permutation"     : 500}
 
 run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
@@ -204,9 +211,9 @@ print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
 testing_acc[sub_test] = accuracy_score(label_predict, Y_Test)
 
 wandb.log({"metrics/train_acc" : training_acc[sub_test],
-            "metrics/test_acc" : testing_acc[sub_test],
-            "metrics/rsquare"  : rsqrd,
-            "metrics/p_value"  : p_value[sub_test]})
+           "metrics/test_acc"  : testing_acc[sub_test],
+           "metrics/rsquare"   : rsqrd,
+           "metrics/p_value"   : p_value[sub_test]})
 
 print('Genetic Algorithm Optimization...')
 n_threads = 8
@@ -222,8 +229,11 @@ num_generation = wandb.config["num_generation"]
 population_size = wandb.config["population_size"]
 
 # Genetic algorithm initialization
-algorithm = NSGA2(pop_size=population_size,
-                  eliminate_duplicates=True)
+algorithm = NSGA2(pop_size  = population_size,
+                  sampling  = FloatRandomSampling(),
+                  crossover = SBX(eta=15, prob=0.9),
+                  mutation  = PM(eta=20),
+                  output    = MultiObjectiveOutput())
 
 res = minimize(problem,
                algorithm,
@@ -239,8 +249,8 @@ plt.figure()
 plt.scatter(res.F[:,0], res.F[:,1], marker='o', 
                                     edgecolors='red', 
                                     facecolor='None' )
-plt.xlabel("SVM loss")
-plt.ylabel("Rsquared")
+plt.xlabel("1 - train_acc")
+plt.ylabel("1 - p value")
 wandb.log({"plots/scatter_plot": wandb.Image(plt)})
 
 # Log and save the weights
@@ -299,8 +309,8 @@ print('Training Acc after GA: ', training_acc_ga[sub_test])
 print('P Value      after GA: ', p_value_ga[sub_test])
 print('Testing  Acc after GA: ', testing_acc_ga[sub_test])
 
-wandb.log({"metrics/train_acc_ga": training_acc_ga[sub_test],
-            "metrics/test_acc_ga" : testing_acc_ga[sub_test],
-            "metrics/p_value_ga"  : p_value_ga[sub_test]})
+wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
+           "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
+           "metrics/p_value_ga"   : p_value_ga[sub_test]})
 
 run.finish()
