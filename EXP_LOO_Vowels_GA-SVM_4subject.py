@@ -117,7 +117,7 @@ p_value_ga      = np.zeros(40)
 
 # sub_test = int(sys.argv[1])
 
-for sub_test in range(int(sys.argv[1]), int(sys.argv[1])+1): 
+for sub_test in range(int(sys.argv[1]), int(sys.argv[1])+4): 
 
     sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
     if int(VFI_1[sub_test][0][0]) > 10:
