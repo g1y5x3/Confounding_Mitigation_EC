@@ -1,101 +1,44 @@
 #!/usr/bin/env python
 # coding: utf-8
-import wandb
 import sys
-import scipy.io as sio
-import numpy as np
+import wandb
+import argparse
 import numpy.matlib
-import matplotlib.pyplot as plt
-import pandas as pd
 import multiprocessing
+import numpy as np
+import pandas as pd
+import scipy.io as sio
+import matplotlib.pyplot as plt
 
 from sklearn.svm import LinearSVC, SVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
-from mlconfound.stats import partial_confound_test
 from mlconfound.plot import plot_null_dist, plot_graph
+from mlconfound.stats import partial_confound_test
 
 from statsmodels.formula.api import ols
 
 from multiprocessing.pool import ThreadPool
 
+from pymoo.core.problem import StarmapParallelization
 from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
+
 from pymoo.visualization.scatter import Scatter
-from pymoo.core.callback import Callback
 from pymoo.algorithms.base.genetic import GeneticAlgorithm
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
 from pymoo.util.display.multi import MultiObjectiveOutput
 
+from ga.fitness import MyProblem, MyCallback
 
 # Just to eliminate the warnings
 def warn(*args, **kwargs):
     pass
 import warnings
 warnings.warn = warn
-
-class MyProblem(ElementwiseProblem):
-
-    def __init__(self, **kwargs):
-        super().__init__(n_var=48, 
-                         n_obj=2,
-                         n_constr=0,
-                         xl = -2*np.ones(48),
-                         xu =  2*np.ones(48),
-                         **kwargs)
-   
-    def load_data_svm(self, x_train, y_train, c_train, clf, permu):
-        # Load informations from the individual classification exerpiment 
-        # x_train - training features
-        # y_train - labels
-        # c_train - confounding variables
-        # model   - the trained svm model
-        self.x_train = x_train
-        self.y_train = y_train
-        self.c_train = c_train
-        self.clf     = clf
-        self.permu   = permu
-
-        # dimension of the training feature
-        self.n = np.shape(x_train)[0]
-        self.d = np.shape(x_train)[1]
- 
-    def _evaluate(self, x, out, *args, **kwargs):
-        # pymoo initialize the chromosome as a 1-D array which can be converted
-        # into matrix for element-wise weight multiplication
-        fw = np.matlib.repmat(x, self.n, 1)
-        x_train_tf = self.x_train * fw
-
-        # first objective is SVM training accuracy
-        f1 = 1 - self.clf.score(x_train_tf, self.y_train)
-
-        # second objective is P Value from CPT  
-        y_hat = self.clf.predict(x_train_tf)
-        ret = partial_confound_test(self.y_train, y_hat, self.c_train,
-                                    cat_y=True, cat_yhat=True, cat_c=False,
-                                    cond_dist_method='gam', 
-                                    num_perms=self.permu, mcmc_steps=50,
-                                    n_jobs=-1,
-                                    progress=False)
-
-        f2 = 1 - ret.p 
-
-        out['F'] = [f1, f2]
-
-class MyCallback(Callback):
-    def __init__(self) -> None:
-        super().__init__()
-        self.data["best"] = []
-
-    def notify(self, algorithm):
-        self.data["best"].append(algorithm.pop.get("F")[0].min())
-        wandb.log({"ga/n_gen"       : algorithm.n_gen,
-                   "ga/1-train_acc" : algorithm.pop.get("F")[0].min(),
-                   "ga/1-p_value"   : algorithm.pop.get("F")[1].min()})
 
 if __name__ == "__main__":
 
@@ -117,14 +60,31 @@ if __name__ == "__main__":
     training_acc_ga = np.zeros(40)
     p_value_ga      = np.zeros(40)
 
-    # sub_test = int(sys.argv[1])
+    project_name = 'LOO Vowels GA-SVM RBF'
 
-    config = {"num_generation"  : 20,
-              "population_size" : 64,
-              "permutation"     : 1000,
-              "threads"         : 16}
+    parser = argparse.ArgumentParser(description="GA-SVM experiments")
 
-    for sub_test in range(int(sys.argv[1]), int(sys.argv[1])+1): 
+    parser.add_argument('-s', type=int, default=0, help="start of the subjects")
+    parser.add_argument('-nsub', type=int, default=1, help="number of subjects to be executed")
+    parser.add_argument('-ngen', type=int, default=1, help="Number of generation")
+    parser.add_argument('-pop', type=int, default=64, help='Population size')
+    parser.add_argument('-perm', type=int, default=100, help='Permutation value')
+    parser.add_argument('-thread', type=int, default=8, help='Number of threads')
+    parser.add_argument('-group', type=str, default='experiment_test', help='Group name')    
+
+    args = parser.parse_args()
+
+    # Default value for configurations and parameters that doesn't need
+    # to be logged
+    config = {"num_generation"  : args.ngen,
+              "population_size" : args.pop,
+              "permutation"     : args.perm,
+              "threads"         : args.thread}
+    group_name   = args.group
+    start_sub    = args.s 
+    num_sub      = args.nsub
+
+    for sub_test in range(start_sub, start_sub + num_sub): 
 
         sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
         if int(VFI_1[sub_test][0][0]) > 10:
@@ -132,13 +92,13 @@ if __name__ == "__main__":
         else:
             sub_group = 'Healthy'
 
-        run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
-                        group    = 'experiment_parallel_1',
-                        config   = config,
-                        name     = sub_txt,
-                        tags     = [sub_group],
-                        settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
-                        reinit   = True)
+        run = wandb.init(project  = project_name,
+                         group    = group_name,
+                         config   = config,
+                         name     = sub_txt,
+                         tags     = [sub_group],
+                         settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
+                         reinit   = True)
 
         print('\n===No.%d: %s===\n'%(sub_test+1, sub_txt)) 
         print('VFI-1:', (VFI_1[sub_test][0][0]))

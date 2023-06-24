@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-import math
 import wandb
+import sys
 import scipy.io as sio
 import numpy as np
 import numpy.matlib
@@ -17,11 +17,19 @@ from mlconfound.stats import partial_confound_test
 from mlconfound.plot import plot_null_dist, plot_graph
 
 from statsmodels.formula.api import ols
+
+from multiprocessing.pool import ThreadPool
+
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
 from pymoo.visualization.scatter import Scatter
-from multiprocessing.pool import ThreadPool
+from pymoo.core.callback import Callback
+from pymoo.algorithms.base.genetic import GeneticAlgorithm
+from pymoo.operators.crossover.sbx import SBX
+from pymoo.operators.mutation.pm import PM
+from pymoo.operators.sampling.rnd import FloatRandomSampling
+from pymoo.util.display.multi import MultiObjectiveOutput
 
 
 # Just to eliminate the warnings
@@ -40,7 +48,7 @@ class MyProblem(ElementwiseProblem):
                          xu =  2*np.ones(48),
                          **kwargs)
    
-    def load_data_svm(self, x_train, y_train, c_train, clf):
+    def load_data_svm(self, x_train, y_train, c_train, clf, permu):
         # Load informations from the individual classification exerpiment 
         # x_train - training features
         # y_train - labels
@@ -50,6 +58,7 @@ class MyProblem(ElementwiseProblem):
         self.y_train = y_train
         self.c_train = c_train
         self.clf     = clf
+        self.permu   = permu
 
         # dimension of the training feature
         self.n = np.shape(x_train)[0]
@@ -61,7 +70,7 @@ class MyProblem(ElementwiseProblem):
         fw = np.matlib.repmat(x, self.n, 1)
         x_train_tf = self.x_train * fw
 
-        # first objective is SVM loss
+        # first objective is SVM training accuracy
         f1 = 1 - self.clf.score(x_train_tf, self.y_train)
 
         # second objective is P Value from CPT  
@@ -69,13 +78,24 @@ class MyProblem(ElementwiseProblem):
         ret = partial_confound_test(self.y_train, y_hat, self.c_train,
                                     cat_y=True, cat_yhat=True, cat_c=False,
                                     cond_dist_method='gam', 
-                                    num_perms=1000, mcmc_steps=50,
+                                    num_perms=self.permu, mcmc_steps=50,
                                     n_jobs=-1,
                                     progress=False)
 
-        f2 = ret.p 
+        f2 = 1 - ret.p 
 
         out['F'] = [f1, f2]
+
+class MyCallback(Callback):
+    def __init__(self) -> None:
+        super().__init__()
+        self.data["best"] = []
+
+    def notify(self, algorithm):
+        self.data["best"].append(algorithm.pop.get("F")[0].min())
+        wandb.log({"ga/n_gen"       : algorithm.n_gen,
+                   "ga/1-train_acc" : algorithm.pop.get("F")[0].min(),
+                   "ga/1-p_value"   : algorithm.pop.get("F")[1].min()})
 
 DATA_ALL = sio.loadmat("data/subjects_40_v6.mat")
 
@@ -95,19 +115,29 @@ testing_acc_ga  = np.zeros(40)
 training_acc_ga = np.zeros(40)
 p_value_ga      = np.zeros(40)
 
-# subject_group_test = [0,20]
-config = {"num_generation"  : 1,
-          "population_size" : 128}
+# sub_test = int(sys.argv[1])
 
-for sub_test in range(6,8):
+for sub_test in range(int(sys.argv[1]), int(sys.argv[1])+40): 
+
     sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
     if int(VFI_1[sub_test][0][0]) > 10:
         sub_group = 'Fatigued'
     else:
         sub_group = 'Healthy'
 
+    # parameters for testing
+    # config = {"num_generation"  : 1,
+            #   "population_size" : 64,
+            #   "permutation"     : 50,
+            #   "threads"         : 16}
+
+    config = {"num_generation"  : 1,
+              "population_size" : 128,
+              "permutation"     : 1000,
+              "threads"         : 8}
+
     run = wandb.init(project  = 'LOO Vowels GA-SVM RBF',
-                     group    = 'experiment_opt_p_value',
+                     group    = 'experiment_low_n-gen',
                      config   = config,
                      name     = sub_txt,
                      tags     = [sub_group],
@@ -126,8 +156,8 @@ for sub_test in range(6,8):
 
     num_leftout = round(leftout*num_signal)
     index_leftout = np.random.choice(range(num_signal), 
-                                     size=num_leftout, 
-                                     replace=False)
+                                        size=num_leftout, 
+                                        replace=False)
     print("Left-out Test samples: ", index_leftout.size)
 
     X_Test = X_Temp[index_leftout,:]
@@ -157,21 +187,21 @@ for sub_test in range(6,8):
 
     # ===== Data loading and preprocessing =====
     # Training and Validation
+    # NEED TO REMOVE THE VALIDATION DATA SINCE THEY ARE NOT BEING USED
     X_Train, X_Valid, YC_Train, YC_Valid = train_test_split(X_TV, 
                                                             np.transpose([Y_TV, C_TV]), 
                                                             test_size=0.1, 
                                                             random_state=42)
     Y_Train, C_Train = YC_Train[:,0], YC_Train[:,1]
     Y_Valid, C_Valid = YC_Valid[:,0], YC_Valid[:,1]    
-    
+
     clf = SVC(C=1.0, gamma='scale', kernel='rbf', class_weight='balanced', max_iter=1000, tol=0.001)
     clf.fit(X_Train, Y_Train)
-    
+
     label_predict = clf.predict(X_Train)
-    
+
     print('Training Acc: ', accuracy_score(label_predict, Y_Train))
     training_acc[sub_test] = accuracy_score(label_predict, Y_Train)
-
 
     ret = partial_confound_test(Y_Train, label_predict, C_Train, 
                                 cat_y=True, cat_yhat=True, cat_c=False,
@@ -195,22 +225,30 @@ for sub_test in range(6,8):
                "metrics/p_value"   : p_value[sub_test]})
 
     print('Genetic Algorithm Optimization...')
-    n_threads = 8
+
+    num_permu       = wandb.config["permutation"]
+    num_generation  = wandb.config["num_generation"]
+    population_size = wandb.config["population_size"]
+    threads_count   = wandb.config["threads"]
+
+    n_threads = threads_count
     pool = ThreadPool(n_threads)
     runner = StarmapParallelization(pool.starmap)
 
     problem = MyProblem(elementwise_runner=runner)
-    problem.load_data_svm(X_Train, Y_Train, C_Train, clf)
+    problem.load_data_svm(X_Train, Y_Train, C_Train, clf, num_permu)
 
-    num_generation = wandb.config["num_generation"]
-    population_size = wandb.config["population_size"]
-    
     # Genetic algorithm initialization
-    algorithm = NSGA2(pop_size=population_size)
+    algorithm = NSGA2(pop_size  = population_size,
+                      sampling  = FloatRandomSampling(),
+                      crossover = SBX(eta=15, prob=0.9),
+                      mutation  = PM(eta=20),
+                      output    = MultiObjectiveOutput())
 
     res = minimize(problem,
                    algorithm,
                    ("n_gen", num_generation),
+                   callback = MyCallback(),
                    verbose=False)
 
     print('Threads:', res.exec_time)
@@ -221,8 +259,8 @@ for sub_test in range(6,8):
     plt.scatter(res.F[:,0], res.F[:,1], marker='o', 
                                         edgecolors='red', 
                                         facecolor='None' )
-    plt.xlabel("SVM loss")
-    plt.ylabel("Rsquared")
+    plt.xlabel("1-train_acc")
+    plt.ylabel("1-p value")
     wandb.log({"plots/scatter_plot": wandb.Image(plt)})
 
     # Log and save the weights
@@ -232,7 +270,7 @@ for sub_test in range(6,8):
 
     # Evaluate the results discovered by GA
     Xid = np.argsort(res.F[:,0])
-    training_acc_best = 0
+    acc_best = 0
     for t in range(np.shape(res.X)[0]):
         w = res.X[Xid[t],:]
 
@@ -248,7 +286,7 @@ for sub_test in range(6,8):
         df = pd.DataFrame({'x': C_Train, 'y': Y_tf_train})
         fit = ols('y~C(x)', data=df).fit()
         temp_rsqrd = fit.rsquared.flatten()[0]
- 
+
         # Evaluate the p value from the current predicitons
         ret_ga = partial_confound_test(Y_Train, Y_tf_train, C_Train, 
                                 cat_y=True, cat_yhat=True, cat_c=False,
@@ -269,11 +307,12 @@ for sub_test in range(6,8):
                    "pareto-front/test_acc" : temp_te_acc})
 
         # Detect if the current chromosome gives the best predictio`n
-        if temp_tr_acc > training_acc_best and temp_p_value > 0.05:
-            training_acc_best         = temp_tr_acc 
+        if temp_te_acc > acc_best:
+            acc_best = temp_te_acc 
 
             training_acc_ga[sub_test] = temp_tr_acc 
             p_value_ga[sub_test]      = temp_p_value
+            rsqrd_best                = temp_rsqrd
             testing_acc_ga[sub_test]  = temp_te_acc
 
 
@@ -281,25 +320,9 @@ for sub_test in range(6,8):
     print('P Value      after GA: ', p_value_ga[sub_test])
     print('Testing  Acc after GA: ', testing_acc_ga[sub_test])
 
-    wandb.log({"metrics/train_acc_ga": training_acc_ga[sub_test],
-               "metrics/test_acc_ga" : testing_acc_ga[sub_test],
-               "metrics/p_value_ga"  : p_value_ga[sub_test]})
-    
+    wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
+               "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
+               "metrics/p_value_ga"   : p_value_ga[sub_test],
+               "metrics/rsquare_ga"   : rsqrd_best})
+
     run.finish()
-             
-print('Before GA')
-print('Average Training Accuracy: {0:.2f}%'.format(100*np.mean(training_acc)))
-print('Average Testing Accuracy: {0:.2f}%'.format(100*np.mean(testing_acc)))
-print('Average P Value: {0:.2f}%'.format(np.mean(p_value)))
-
-print('After GA')
-print('Average Training Accuracy: {0:.2f}%'.format(100*np.mean(training_acc_ga)))
-print('Average Testing Accuracy: {0:.2f}%'.format(100*np.mean(testing_acc_ga)))
-print('Average P Value: {0:.2f}'.format(np.mean(p_value_ga)))
-
-result_array = np.array([training_acc   , testing_acc   , p_value,
-                         training_acc_ga, testing_acc_ga, p_value_ga]).T
-df = pd.DataFrame(result_array, columns=['Train'   , 'Test'   , 'P value', 
-                                         'Train GA', 'Test GA', 'P value GA'])
-print(df.mean(axis=0))
-df.to_csv('GA-SVM_Linear_Vowels-n_gen={0:02d}.csv'.format(num_generation))
