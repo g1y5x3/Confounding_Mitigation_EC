@@ -202,10 +202,10 @@ if __name__ == "__main__":
                         output    = MultiObjectiveOutput())
 
         res = minimize(problem,
-                    algorithm,
-                    ("n_gen", num_generation),
-                    callback = MyCallback(),
-                    verbose=False)
+                       algorithm,
+                       ("n_gen", num_generation),
+                       callback = MyCallback(),
+                       verbose=False)
 
         print('Threads:', res.exec_time)
         pool.close()
