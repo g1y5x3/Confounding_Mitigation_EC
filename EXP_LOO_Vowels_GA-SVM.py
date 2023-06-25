@@ -80,9 +80,9 @@ if __name__ == "__main__":
               "population_size" : args.pop,
               "permutation"     : args.perm,
               "threads"         : args.thread}
-    group_name   = args.group
-    start_sub    = args.s 
-    num_sub      = args.nsub
+    group_name = args.group
+    start_sub  = args.s 
+    num_sub    = args.nsub
 
     for sub_test in range(start_sub, start_sub + num_sub): 
 
@@ -196,10 +196,10 @@ if __name__ == "__main__":
 
         # Genetic algorithm initialization
         algorithm = NSGA2(pop_size  = population_size,
-                        sampling  = FloatRandomSampling(),
-                        crossover = SBX(eta=15, prob=0.9),
-                        mutation  = PM(eta=20),
-                        output    = MultiObjectiveOutput())
+                          sampling  = FloatRandomSampling(),
+                          crossover = SBX(eta=15, prob=0.9),
+                          mutation  = PM(eta=20),
+                          output    = MultiObjectiveOutput())
 
         res = minimize(problem,
                        algorithm,
