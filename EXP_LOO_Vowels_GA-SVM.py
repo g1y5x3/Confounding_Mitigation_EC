@@ -258,9 +258,9 @@ if __name__ == "__main__":
             temp_te_acc = accuracy_score(Y_tf_test, Y_Test)
 
             wandb.log({"pareto-front/train_acc": temp_tr_acc,
-                    "pareto-front/rsquare"  : temp_rsqrd,
-                    "pareto-front/p_value"  : temp_p_value,
-                    "pareto-front/test_acc" : temp_te_acc})
+                       "pareto-front/rsquare"  : temp_rsqrd,
+                       "pareto-front/p_value"  : temp_p_value,
+                       "pareto-front/test_acc" : temp_te_acc})
 
             # Detect if the current chromosome gives the best predictio`n
             if temp_te_acc > acc_best:
@@ -277,8 +277,8 @@ if __name__ == "__main__":
         print('Testing  Acc after GA: ', testing_acc_ga[sub_test])
 
         wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
-                "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
-                "metrics/p_value_ga"   : p_value_ga[sub_test],
-                "metrics/rsquare_ga"   : rsqrd_best})
+                   "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
+                   "metrics/p_value_ga"   : p_value_ga[sub_test],
+                   "metrics/rsquare_ga"   : rsqrd_best})
 
         run.finish()
