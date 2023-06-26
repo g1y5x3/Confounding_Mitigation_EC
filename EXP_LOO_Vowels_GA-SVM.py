@@ -26,7 +26,6 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
 from pymoo.visualization.scatter import Scatter
-from pymoo.algorithms.base.genetic import GeneticAlgorithm
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
@@ -175,10 +174,10 @@ if __name__ == "__main__":
         print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
         testing_acc[sub_test] = accuracy_score(label_predict, Y_Test)
 
-        wandb.log({"metrics/train_acc" : training_acc[sub_test],
-                "metrics/test_acc"  : testing_acc[sub_test],
-                "metrics/rsquare"   : rsqrd,
-                "metrics/p_value"   : p_value[sub_test]})
+        wandb.log({"metrics/train_acc": training_acc[sub_test],
+                   "metrics/test_acc" : testing_acc[sub_test],
+                   "metrics/rsquare"  : rsqrd,
+                   "metrics/p_value"  : p_value[sub_test]})
 
         print('Genetic Algorithm Optimization...')
 
