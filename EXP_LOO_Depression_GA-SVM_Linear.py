@@ -176,7 +176,7 @@ if __name__=="__main__":
         pool = ThreadPool(n_threads)
         runner = StarmapParallelization(pool.starmap)
 
-        problem = MyProblem(elementwise_runner=runner)
+        problem = MyProblem(n_var=36, gielementwise_runner=runner)
         problem.load_data_svm(x_train, y_train, c_train, clf, num_permu)
 
         algorithm = NSGA2(pop_size  = population_size,
