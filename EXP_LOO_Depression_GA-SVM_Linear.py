@@ -216,7 +216,7 @@ if __name__=="__main__":
             temp_rsqrd = fit.rsquared.flatten()[0]
 
             # Evaluate the p value from the current predicitions
-            ret_ga = partial_confound_test(y_train, label_predict_tf_train, c_train, 
+            ret_ga = partial_confound_test(y_train, y_train_tf, c_train, 
                                         cat_y=True, cat_yhat=True, cat_c=False,
                                         cond_dist_method='gam',
                                         progress=False)
