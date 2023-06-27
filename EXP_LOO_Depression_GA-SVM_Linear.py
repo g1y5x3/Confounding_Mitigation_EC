@@ -179,7 +179,7 @@ if __name__=="__main__":
         problem = MyProblem(elementwise_runner=runner)
         problem.load_data_svm(x_train, y_train, c_train, clf, num_permu)
 
-        algorithm = NSGA2(pop_size=population_size
+        algorithm = NSGA2(pop_size  = population_size,
                           sampling  = FloatRandomSampling(),
                           crossover = SBX(eta=15, prob=0.9),
                           mutation  = PM(eta=20),
