@@ -112,7 +112,7 @@ if __name__=="__main__":
     num_sub    = args.nsub
     tag        = args.tag
 
-    for s in range(num_subject):
+    for s in range(start_sub, start_sub + num_sub):
         print('\n===NO.{}: {}===\n'.format(s, subject_all[s]))
         id_train = (subject_id != subject_all[s])
         id_test  = (subject_id == subject_all[s])
