@@ -4,4 +4,5 @@
 wandb
 data/voiceFeats.mat
 data/subjects_40_v6.mat
+ga/__pycache__/*
 pymoo_test*

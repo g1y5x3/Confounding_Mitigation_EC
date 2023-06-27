@@ -120,7 +120,7 @@ if __name__=="__main__":
         run = wandb.init(project  = project_name,
                          group    = group_name,
                          config   = config,
-                         name     = str(id_test),
+                         name     = str(subject_all[s]),
                          tags     = [tag],
                          settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
                          reinit   = True)
