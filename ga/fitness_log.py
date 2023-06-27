@@ -68,14 +68,7 @@ class MyCallback(Callback):
     def notify(self, algorithm):
         F = algorithm.pop.get("F")
         X = algorithm.pop.get("X")
-
-        # Plot the parento front
-        plt.figure()
-        plt.scatter(F[:,0], F[:,1], marker='o', edgecolors='red', facecolor='None')
-        plt.xlabel("1-train_acc")
-        plt.ylabel("1-p value")
-        wandb.log({"plots/parento_front-{}".format(algorithm.n_gen): wandb.Image(plt)})
-
+        
         # Evaluate the results from GA
         Xid = np.argsort(F[:,0])
         acc_best = 0        
@@ -116,10 +109,10 @@ class MyCallback(Callback):
             temp_te_acc = algorithm.problem.clf.score(x_test_tf, 
                                                       algorithm.problem.y_test)
 
-            wandb.log({"pareto-front/train_acc-{}".format(algorithm.n_gen): temp_tr_acc,
-                       "pareto-front/rsquare-{}".format(algorithm.n_gen)  : temp_rsqrd,
-                       "pareto-front/p_value-{}".format(algorithm.n_gen)  : temp_p_value,
-                       "pareto-front/test_acc-{}".format(algorithm.n_gen) : temp_te_acc})
+            wandb.log({"pareto-front-{}/train_acc".format(algorithm.n_gen): temp_tr_acc,
+                       "pareto-front-{}/rsquare".format(algorithm.n_gen)  : temp_rsqrd,
+                       "pareto-front-{}/p_value".format(algorithm.n_gen)  : temp_p_value,
+                       "pareto-front-{}/test_acc".format(algorithm.n_gen) : temp_te_acc})
 
             if temp_te_acc > acc_best:
                 acc_best = temp_te_acc 
