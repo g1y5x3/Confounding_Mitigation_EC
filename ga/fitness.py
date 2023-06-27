@@ -8,8 +8,7 @@ from mlconfound.stats import partial_confound_test
 class MyProblem(ElementwiseProblem):
 
     def __init__(self, **kwargs):
-        super().__init__(n_var=48, 
-                         n_obj=2,
+        super().__init__(n_obj=2,
                          n_constr=0,
                          xl = -2*np.ones(48),
                          xu =  2*np.ones(48),
