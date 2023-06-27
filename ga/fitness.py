@@ -10,8 +10,6 @@ class MyProblem(ElementwiseProblem):
     def __init__(self, **kwargs):
         super().__init__(n_obj=2,
                          n_constr=0,
-                         xl = -2*np.ones(48),
-                         xu =  2*np.ones(48),
                          **kwargs)
    
     def load_data_svm(self, x_train, y_train, c_train, clf, permu):
