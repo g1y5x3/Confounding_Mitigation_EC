@@ -34,6 +34,8 @@ if __name__=="__main__":
     subject_all = data['PID'].unique()
     num_subject = len(subject_all)
 
+    print("Total subjects: ", num_subject)
+
     x = data[['pcm_intensity_sma_quartile1', 
               'pcm_loudness_sma_linregerrA',
               'pcm_loudness_sma_stddev',
@@ -113,7 +115,6 @@ if __name__=="__main__":
     tag        = args.tag
 
     for s in range(start_sub, start_sub + num_sub):
-        print('\n===NO.{}: {}===\n'.format(s, subject_all[s]))
         id_train = (subject_id != subject_all[s])
         id_test  = (subject_id == subject_all[s])
 
@@ -125,6 +126,8 @@ if __name__=="__main__":
                          settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
                          reinit   = True)
         
+        print('\n===NO.{}: {}===\n'.format(s, subject_all[s]))
+
         x_train = x[id_train,:]
         y_train = y[id_train]
         c_train = c[id_train]
