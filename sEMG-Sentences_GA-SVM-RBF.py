@@ -26,12 +26,13 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
 from pymoo.visualization.scatter import Scatter
+from pymoo.algorithms.base.genetic import GeneticAlgorithm
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
 from pymoo.util.display.multi import MultiObjectiveOutput
 
-from ga.fitness import MyProblem, MyCallback
+from ga.fitness_log import MyProblem, MyCallback
 
 # Just to eliminate the warnings
 def warn(*args, **kwargs):
@@ -42,6 +43,7 @@ warnings.warn = warn
 if __name__ == "__main__":
 
     DATA_ALL = sio.loadmat("data/subjects_40_v6.mat")
+    # DATA_ALL = sio.loadmat("data/subjects_40_sen_v1.mat")
 
     FEAT_N           = DATA_ALL['FEAT_N']            # Normalized features
     LABEL            = DATA_ALL['LABEL']             # Labels
@@ -59,7 +61,7 @@ if __name__ == "__main__":
     training_acc_ga = np.zeros(40)
     p_value_ga      = np.zeros(40)
 
-    project_name = 'LOO Vowels GA-SVM RBF'
+    project_name = 'LOO Sentence GA-SVM RBF'
 
     parser = argparse.ArgumentParser(description="GA-SVM experiments")
 
@@ -174,10 +176,10 @@ if __name__ == "__main__":
         print('Testing  Acc: ', accuracy_score(label_predict, Y_Test))
         testing_acc[sub_test] = accuracy_score(label_predict, Y_Test)
 
-        wandb.log({"metrics/train_acc": training_acc[sub_test],
-                   "metrics/test_acc" : testing_acc[sub_test],
-                   "metrics/rsquare"  : rsqrd,
-                   "metrics/p_value"  : p_value[sub_test]})
+        wandb.log({"metrics/train_acc" : training_acc[sub_test],
+                "metrics/test_acc"  : testing_acc[sub_test],
+                "metrics/rsquare"   : rsqrd,
+                "metrics/p_value"   : p_value[sub_test]})
 
         print('Genetic Algorithm Optimization...')
 
@@ -191,7 +193,8 @@ if __name__ == "__main__":
         runner = StarmapParallelization(pool.starmap)
 
         problem = MyProblem(elementwise_runner=runner)
-        problem.load_data_svm(X_Train, Y_Train, C_Train, clf, num_permu)
+        problem.load_param(X_Train, Y_Train, C_Train, X_Test, Y_Test, 
+                           clf, num_permu)
 
         # Genetic algorithm initialization
         algorithm = NSGA2(pop_size  = population_size,
@@ -208,54 +211,10 @@ if __name__ == "__main__":
 
         print('Threads:', res.exec_time)
         pool.close()
-        
-        # Evaluate the results discovered by GA
-        Xid = np.argsort(res.F[:,0])
-        acc_best = 0
-        for t in range(np.shape(res.X)[0]):
-            w = res.X[Xid[t],:]
-
-            # Evalute the training performance
-            n = np.shape(X_Train)[0]
-            fw = np.matlib.repmat(w, n, 1)
-            x_train_tf = X_Train * fw
-            Y_tf_train = clf.predict(x_train_tf)
-            # temp_tr_acc = accuracy_score(Y_tf_train, Y_Train)
-            temp_tr_acc = clf.score(x_train_tf, Y_Train)
-
-            # Evaluate the r squared
-            df = pd.DataFrame({'x': C_Train, 'y': Y_tf_train})
-            fit = ols('y~C(x)', data=df).fit()
-            temp_rsqrd = fit.rsquared.flatten()[0]
-
-            # Evaluate the p value from the current predicitons
-            ret_ga = partial_confound_test(Y_Train, Y_tf_train, C_Train, 
-                                    cat_y=True, cat_yhat=True, cat_c=False,
-                                    cond_dist_method='gam',
-                                    progress=False)
-            temp_p_value = ret_ga.p
-
-            # Evaluate the testing performance
-            n = np.shape(X_Test)[0]
-            fw = np.matlib.repmat(w, n, 1)
-            x_test_tf = X_Test * fw
-            Y_tf_test = clf.predict(x_test_tf)
-            temp_te_acc = accuracy_score(Y_tf_test, Y_Test)
-
-            wandb.log({"pareto-front/train_acc": temp_tr_acc,
-                       "pareto-front/rsquare"  : temp_rsqrd,
-                       "pareto-front/p_value"  : temp_p_value,
-                       "pareto-front/test_acc" : temp_te_acc})
-
-            # Detect if the current chromosome gives the best predictio`n
-            if temp_te_acc > acc_best:
-                acc_best = temp_te_acc 
-
-                training_acc_ga[sub_test] = temp_tr_acc 
-                p_value_ga[sub_test]      = temp_p_value
-                rsqrd_best                = temp_rsqrd
-                testing_acc_ga[sub_test]  = temp_te_acc
-
+        training_acc_ga[sub_test] = res.algorithm.callback.data["train_acc"][-1]
+        p_value_ga[sub_test] = res.algorithm.callback.data["p_value"][-1]
+        testing_acc_ga[sub_test] = res.algorithm.callback.data["test_acc"][-1]
+        rsqrd_best = res.algorithm.callback.data["rsquare"][-1]
 
         print('Training Acc after GA: ', training_acc_ga[sub_test])
         print('P Value      after GA: ', p_value_ga[sub_test])

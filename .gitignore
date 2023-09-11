@@ -1,8 +1,11 @@
+old
 .ipynb_checkpoints
 .vscode
 *.csv
 wandb
 data/voiceFeats.mat
-data/subjects_40_v6.mat
-ga/__pycache__/*
+GA/__pycache__
 pymoo_test*
+
+data/subjects_40_v6.mat
+data/subjects_40_sen_v1.mat
