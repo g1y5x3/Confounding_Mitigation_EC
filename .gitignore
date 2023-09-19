@@ -7,5 +7,4 @@ data/voiceFeats.mat
 GA/__pycache__
 pymoo_test*
 
-data/subjects_40_v6.mat
-data/subjects_40_sen_v1.mat
+data/subjects_*
