@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-import sys
-import wandb
 import argparse
 import numpy.matlib
 import multiprocessing
@@ -10,7 +8,7 @@ import pandas as pd
 import scipy.io as sio
 import matplotlib.pyplot as plt
 
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
@@ -40,15 +38,20 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
+import wandb
+
 if __name__ == "__main__":
 
-    DATA_ALL = sio.loadmat("data/subjects_40_sen_v1.mat")
+    DATA_ALL = sio.loadmat("data/subjects_40_v6.mat")
+    #DATA_ALL = sio.loadmat("data/subjects_40_sen_v1.mat")
+    DATA_ALL = sio.loadmat("data/subjects_40_sen_fix_win1.0.mat")
+    DATA_PARTIAL = sio.loadmat("data/subjects_40_v6.mat")
 
     FEAT_N           = DATA_ALL['FEAT_N']            # Normalized features
     LABEL            = DATA_ALL['LABEL']             # Labels
-    VFI_1            = DATA_ALL['SUBJECT_VFI']
-    SUBJECT_ID       = DATA_ALL['SUBJECT_ID']        # Sujbect ID
-    SUBJECT_SKINFOLD = DATA_ALL['SUBJECT_SKINFOLD']
+    VFI_1            = DATA_PARTIAL['SUBJECT_VFI']
+    SUBJECT_ID       = DATA_PARTIAL['SUBJECT_ID']        # Sujbect ID
+    SUBJECT_SKINFOLD = DATA_PARTIAL['SUBJECT_SKINFOLD']
 
     print(FEAT_N[2,0].shape)
     print(LABEL[2,0].shape)
@@ -74,7 +77,7 @@ if __name__ == "__main__":
     parser.add_argument('-pop', type=int, default=64, help='Population size')
     parser.add_argument('-perm', type=int, default=100, help='Permutation value')
     parser.add_argument('-thread', type=int, default=8, help='Number of threads')
-    parser.add_argument('-group', type=str, default='experiment_test', help='Group name')    
+    parser.add_argument('-group', type=str, default='SVM', help='Group name')
 
     args = parser.parse_args()
 
@@ -88,7 +91,7 @@ if __name__ == "__main__":
     start_sub  = args.s 
     num_sub    = args.nsub
 
-    for sub_test in range(start_sub, start_sub + num_sub): 
+    for sub_test in range(start_sub, start_sub + num_sub):
 
         sub_txt = "R%03d"%(int(SUBJECT_ID[sub_test][0][0]))
         if int(VFI_1[sub_test][0][0]) > 10:
@@ -104,20 +107,19 @@ if __name__ == "__main__":
                          settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
                          reinit   = True)
 
-        print('\n===No.%d: %s===\n'%(sub_test+1, sub_txt)) 
+        print('\n===No.%d: %s===\n'%(sub_test+1, sub_txt))
         print('VFI-1:', (VFI_1[sub_test][0][0]))
 
         wandb.log({"subject_info/vfi_1"  : int(VFI_1[sub_test][0][0])})
 
         # ===== Load Testing Signals =====
-        num_signal = np.shape(FEAT_N[sub_test,0])[0]    
+        num_signal = np.shape(FEAT_N[sub_test,0])[0]
         X_Temp = FEAT_N[sub_test,0]
         Y_Temp = LABEL[sub_test,0].flatten()
 
         num_leftout = round(leftout*num_signal)
-        print(num_leftout)
-        index_leftout = np.random.choice(range(num_signal), 
-                                            size=num_leftout, 
+        index_leftout = np.random.choice(range(num_signal),
+                                            size=num_leftout,
                                             replace=False)
         print("Left-out Test samples: ", index_leftout.size)
 
@@ -141,24 +143,24 @@ if __name__ == "__main__":
                 c_s = np.mean(np.mean(SUBJECT_SKINFOLD[sub_train,:]), axis=1)
                 X_TV = np.concatenate((X_TV, x_s), axis=0)
                 Y_TV = np.concatenate((Y_TV, y_s), axis=0)
-                C_TV = np.concatenate((C_TV, c_s), axis=0)       
+                C_TV = np.concatenate((C_TV, c_s), axis=0)
 
         print('# of Healthy Samples: %d'%(np.sum(Y_TV == -1)))
-        print('# of Fatigued Samples: %d'%(np.sum(Y_TV == 1)))    
+        print('# of Fatigued Samples: %d'%(np.sum(Y_TV == 1)))
 
-        print(X_TV.shape)
-        print(Y_TV.shape)
-        print(C_TV.shape)
+        wandb.log({"exp_info/healthy_samples" : np.sum(Y_TV == -1),
+                   "exp_info/fatigued_samples": np.sum(Y_TV ==  1),
+                   "exp_info/total_samples"   : np.sum(Y_TV == -1) + np.sum(Y_TV ==  1)})
 
         # ===== Data loading and preprocessing =====
         # Training and Validation
         # NEED TO REMOVE THE VALIDATION DATA SINCE THEY ARE NOT BEING USED
-        X_Train, X_Valid, YC_Train, YC_Valid = train_test_split(X_TV, 
-                                                                Y_TV, # np.transpose([Y_TV, C_TV]), 
-                                                                test_size=0.1, 
+        X_Train, X_Valid, YC_Train, YC_Valid = train_test_split(X_TV,
+                                                                Y_TV, # np.transpose([Y_TV, C_TV]),
+                                                                test_size=0.1,
                                                                 random_state=42)
         # Y_Train, C_Train = YC_Train[:,0], YC_Train[:,1]
-        # Y_Valid, C_Valid = YC_Valid[:,0], YC_Valid[:,1]    
+        # Y_Valid, C_Valid = YC_Valid[:,0], YC_Valid[:,1]
 
         clf = SVC(C=1.0, gamma='scale', kernel='rbf', class_weight='balanced', max_iter=1000, tol=0.001)
         clf.fit(X_Train, YC_Train)
@@ -168,7 +170,7 @@ if __name__ == "__main__":
         print('Training Acc: ', accuracy_score(label_predict, YC_Train))
         training_acc[sub_test] = accuracy_score(label_predict, YC_Train)
 
-        # ret = partial_confound_test(Y_Train, label_predict, C_Train, 
+        # ret = partial_confound_test(Y_Train, label_predict, C_Train,
         #                             cat_y=True, cat_yhat=True, cat_c=False,
         #                             cond_dist_method='gam',
         #                             progress=False)
@@ -201,7 +203,7 @@ if __name__ == "__main__":
         #runner = StarmapParallelization(pool.starmap)
 
         #problem = MyProblem(elementwise_runner=runner)
-        #problem.load_param(X_Train, Y_Train, C_Train, X_Test, Y_Test, 
+        #problem.load_param(X_Train, Y_Train, C_Train, X_Test, Y_Test,
         #                   clf, num_permu)
 
         ## Genetic algorithm initialization
