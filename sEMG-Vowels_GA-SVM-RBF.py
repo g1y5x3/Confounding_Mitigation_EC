@@ -60,16 +60,16 @@ if __name__ == "__main__":
     training_acc_ga = np.zeros(40)
     p_value_ga      = np.zeros(40)
 
-    project_name = 'LOO Vowels GA-SVM RBF'
+    project_name = 'LOO-Sentence-Classification'
 
     parser = argparse.ArgumentParser(description="GA-SVM experiments")
 
     parser.add_argument('-s', type=int, default=0, help="start of the subjects")
     parser.add_argument('-nsub', type=int, default=1, help="number of subjects to be executed")
-    parser.add_argument('-ngen', type=int, default=1, help="Number of generation")
-    parser.add_argument('-pop', type=int, default=64, help='Population size')
-    parser.add_argument('-perm', type=int, default=100, help='Permutation value')
-    parser.add_argument('-thread', type=int, default=8, help='Number of threads')
+    parser.add_argument('-ngen', type=int, default=4, help="Number of generation")
+    parser.add_argument('-pop', type=int, default=128, help='Population size')
+    parser.add_argument('-perm', type=int, default=1000, help='Permutation value')
+    parser.add_argument('-thread', type=int, default=16, help='Number of threads')
     parser.add_argument('-group', type=str, default='experiment_test', help='Group name')    
 
     args = parser.parse_args()
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                          group    = group_name,
                          config   = config,
                          name     = sub_txt,
-                         tags     = [sub_group],
+                         tags     = [sub_group, 'GA-SVM'],
                          settings = wandb.Settings(_disable_stats=True, _disable_meta=True),
                          reinit   = True)
 
