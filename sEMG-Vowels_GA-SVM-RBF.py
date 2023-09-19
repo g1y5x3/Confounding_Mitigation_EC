@@ -32,7 +32,7 @@ from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
 from pymoo.util.display.multi import MultiObjectiveOutput
 
-from ga.fitness_log import MyProblem, MyCallback
+from GA.fitness_log import MyProblem, MyCallback
 
 # Just to eliminate the warnings
 def warn(*args, **kwargs):
@@ -67,8 +67,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', type=int, default=0, help="start of the subjects")
     parser.add_argument('-nsub', type=int, default=1, help="number of subjects to be executed")
     parser.add_argument('-ngen', type=int, default=4, help="Number of generation")
-    parser.add_argument('-pop', type=int, default=128, help='Population size')
-    parser.add_argument('-perm', type=int, default=1000, help='Permutation value')
+    parser.add_argument('-pop', type=int, default=16, help='Population size')
+    parser.add_argument('-perm', type=int, default=100, help='Permutation value')
     parser.add_argument('-thread', type=int, default=16, help='Number of threads')
     parser.add_argument('-group', type=str, default='experiment_test', help='Group name')    
 
