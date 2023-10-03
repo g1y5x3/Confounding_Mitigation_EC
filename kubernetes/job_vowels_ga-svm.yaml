@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: cpu-job
+  name: cpu-job-39
 spec:
   ttlSecondsAfterFinished: 100
   template:
@@ -10,7 +10,7 @@ spec:
         - name: cpu-container
           image: gitlab-registry.nrp-nautilus.io/yg5d6/testcpu
           command: ["/bin/bash", "-c"]
-          args: ["cd home; git clone https://github.com/g1y5x3/Confounding_Mitigation_EC.git; cd Confounding_Mitigation_EC; mv ../subjects_40_v6.mat data/; python3 sEMG-Vowels_GA-SVM-RBF.py -s 0 -nsub 1 -group Vowels"]
+          args: ["cd home; git clone https://github.com/g1y5x3/Confounding_Mitigation_EC.git; cd Confounding_Mitigation_EC; mv ../subjects_40_v6.mat data/; python3 sEMG-Vowels_GA-SVM-RBF.py -s 39 -nsub 1 -group Vowels-GA-SVM"]
           resources:
             limits:
               memory: "16G"

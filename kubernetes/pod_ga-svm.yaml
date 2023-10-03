@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-cpu-yixiang
+spec:
+  containers:
+  - name: cpu-container
+    image: gitlab-registry.nrp-nautilus.io/yg5d6/testcpu
+    command: ["sleep", "infinity"]
+    resources:
+      limits:
+        memory: "16G"
+        cpu: "16"
+      requests:
+        memory: "16G"
+        cpu: "16"

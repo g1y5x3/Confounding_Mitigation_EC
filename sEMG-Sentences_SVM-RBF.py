@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 
 if __name__ == "__main__":
 
-    DATA_ALL = sio.loadmat("data/subjects_40_vowels_v6.mat")
-    # DATA_ALL = sio.loadmat("data/subjects_40_sen_slide_win1.0_overlap0.5.mat")
+    # DATA_ALL = sio.loadmat("data/subjects_40_vowels_v6.mat")
+    DATA_ALL = sio.loadmat("data/subjects_40_sen_slide_win1.0_overlap0.5.mat")
     # DATA_ALL = sio.loadmat("data/subjects_40_sen_fix_win1.0.mat")
     DATA_PARTIAL = sio.loadmat("data/subjects_40_vowels_v6.mat")
 
@@ -22,7 +22,6 @@ if __name__ == "__main__":
     SUBJECT_SKINFOLD = DATA_PARTIAL['SUBJECT_SKINFOLD']
 
     leftout = 1
-    # valid_acc    = np.zeros(40)
     testing_acc  = np.zeros(40)
     training_acc = np.zeros(40)
     p_value      = np.zeros(40)
@@ -37,7 +36,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-s', type=int, default=0, help="start of the subjects")
     parser.add_argument('-nsub', type=int, default=1, help="number of subjects to be executed")
-    parser.add_argument('-group', type=str, default='Vowels', help='Group name')
+    parser.add_argument('-group', type=str, default='Sentence-SlidingWindow', help='Group name')
 
     args = parser.parse_args()
 
