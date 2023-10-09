@@ -23,13 +23,13 @@ class MyProblem(ElementwiseProblem):
         # y_train - labels
         # c_train - confounding variables
         # model   - the trained svm model
-        self.x_train = x_train
-        self.y_train = y_train
-        self.c_train = c_train
-        self.x_test  = x_test
-        self.y_test  = y_test
-        self.clf     = clf
-        self.permu   = permu
+        self.x_train  = x_train
+        self.y_train  = y_train
+        self.c_train  = c_train
+        self.x_test   = x_test
+        self.y_test   = y_test
+        self.clf      = clf
+        self.permu    = permu
 
         # dimension of the training feature
         self.n = np.shape(x_train)[0]
@@ -58,12 +58,13 @@ class MyProblem(ElementwiseProblem):
         out['F'] = [f1, f2]
 
 class MyCallback(Callback):
-    def __init__(self) -> None:
+    def __init__(self, log_flag) -> None:
         super().__init__()
         self.data["train_acc"] = []
         self.data["test_acc"] = []
         self.data["p_value"] = []
         self.data["rsquare"] = []
+        self.log_flag = log_flag
 
     def notify(self, algorithm):
         F = algorithm.pop.get("F")
@@ -108,11 +109,11 @@ class MyCallback(Callback):
             x_test_tf = algorithm.problem.x_test * fw
             temp_te_acc = algorithm.problem.clf.score(x_test_tf, 
                                                       algorithm.problem.y_test)
-
-            wandb.log({"pareto-front-{}/train_acc".format(algorithm.n_gen): temp_tr_acc,
-                       "pareto-front-{}/rsquare".format(algorithm.n_gen)  : temp_rsqrd,
-                       "pareto-front-{}/p_value".format(algorithm.n_gen)  : temp_p_value,
-                       "pareto-front-{}/test_acc".format(algorithm.n_gen) : temp_te_acc})
+            if self.log_flag:
+                wandb.log({"pareto-front-{}/train_acc".format(algorithm.n_gen): temp_tr_acc,
+                        "pareto-front-{}/rsquare".format(algorithm.n_gen)  : temp_rsqrd,
+                        "pareto-front-{}/p_value".format(algorithm.n_gen)  : temp_p_value,
+                        "pareto-front-{}/test_acc".format(algorithm.n_gen) : temp_te_acc})
 
             if temp_te_acc > acc_best:
                 acc_best = temp_te_acc 
@@ -122,11 +123,12 @@ class MyCallback(Callback):
                 rsqrd_best   = temp_rsqrd
                 te_acc_best  = temp_te_acc
 
-        wandb.log({"ga/n_gen"     : algorithm.n_gen,
-                   "ga/train_acc" : tr_acc_best,
-                   "ga/p_value"   : p_value_best,
-                   "ga/rsquare"   : rsqrd_best,
-                   "ga/test_acc"  : te_acc_best})
+        if self.log_flag:
+            wandb.log({"ga/n_gen"     : algorithm.n_gen,
+                    "ga/train_acc" : tr_acc_best,
+                    "ga/p_value"   : p_value_best,
+                    "ga/rsquare"   : rsqrd_best,
+                    "ga/test_acc"  : te_acc_best})
 
         self.data["train_acc"].append(tr_acc_best)
         self.data["p_value"].append(p_value_best)
