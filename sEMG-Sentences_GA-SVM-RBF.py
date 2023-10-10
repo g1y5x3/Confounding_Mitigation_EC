@@ -42,26 +42,11 @@ import wandb
 
 if __name__ == "__main__":
 
-    #DATA_ALL = sio.loadmat("subjects_40_sen_fix_win1.0.mat")
-    DATA_ALL = sio.loadmat("data/subjects_40_sen_slide_win1.0_overlap0.5.mat")
-    SUBJECT_INFO = pd.read_csv("data/subjects_40_info.csv")
-
-    FEAT_N = DATA_ALL['FEAT_N']            # Normalized features
-    LABEL  = DATA_ALL['LABEL']             # Labels
-
-    leftout = 1
-    testing_acc  = np.zeros(40)
-    training_acc = np.zeros(40)
-    p_value      = np.zeros(40)
-
-    testing_acc_ga  = np.zeros(40)
-    training_acc_ga = np.zeros(40)
-    p_value_ga      = np.zeros(40)
-
     project_name = 'LOO-Sentence-Classification'
 
     parser = argparse.ArgumentParser(description="GA-SVM experiments")
 
+    parser.add_argument('-win',    type=str, default='slide')
     parser.add_argument('-wandb',  type=int, default=0)
     parser.add_argument('-start',  type=int, default=0, help="start of the subjects")
     parser.add_argument('-nsub',   type=int, default=1, help="number of subjects to be executed")
@@ -83,6 +68,24 @@ if __name__ == "__main__":
     group_name = args.group
     start_sub  = args.start 
     num_sub    = args.nsub
+
+    if args.win == 'fix':
+        DATA_ALL = sio.loadmat("data/subjects_40_sen_fix_win1.0.mat")
+    else:
+        DATA_ALL = sio.loadmat("data/subjects_40_sen_slide_win1.0_overlap0.5.mat")
+    SUBJECT_INFO = pd.read_csv("data/subjects_40_info.csv")
+
+    FEAT_N = DATA_ALL['FEAT_N']            # Normalized features
+    LABEL  = DATA_ALL['LABEL']             # Labels
+
+    leftout = 1
+    testing_acc  = np.zeros(40)
+    training_acc = np.zeros(40)
+    p_value      = np.zeros(40)
+
+    testing_acc_ga  = np.zeros(40)
+    training_acc_ga = np.zeros(40)
+    p_value_ga      = np.zeros(40)
 
     for sub_test in range(start_sub, start_sub + num_sub):
 
