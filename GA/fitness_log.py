@@ -110,10 +110,10 @@ class MyCallback(Callback):
             temp_te_acc = algorithm.problem.clf.score(x_test_tf, 
                                                       algorithm.problem.y_test)
             if self.log_flag:
-                wandb.log({"pareto-front-{}/train_acc".format(algorithm.n_gen): temp_tr_acc,
-                        "pareto-front-{}/rsquare".format(algorithm.n_gen)  : temp_rsqrd,
-                        "pareto-front-{}/p_value".format(algorithm.n_gen)  : temp_p_value,
-                        "pareto-front-{}/test_acc".format(algorithm.n_gen) : temp_te_acc})
+                wandb.log({"pareto-front/train_acc-{}".format(algorithm.n_gen): temp_tr_acc,
+                        "pareto-front/rsquare-{}".format(algorithm.n_gen)  : temp_rsqrd,
+                        "pareto-front/p_value-{}".format(algorithm.n_gen)  : temp_p_value,
+                        "pareto-front/test_acc-{}".format(algorithm.n_gen) : temp_te_acc})
 
             if temp_te_acc > acc_best:
                 acc_best = temp_te_acc 
