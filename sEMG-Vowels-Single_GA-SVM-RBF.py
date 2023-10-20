@@ -82,6 +82,8 @@ if __name__ == "__main__":
         config["vowel"] = "/u/"
     elif args.vowel == 3:
         config["vowel"] = "/i/"
+    elif args.vowel == 4:
+        config["vowel"] = "/a+u/"
 
     group_name = args.group
     start_sub  = args.s 
@@ -109,7 +111,11 @@ if __name__ == "__main__":
         wandb.log({"subject_info/vfi_1"  : int(VFI_1[sub_test][0][0])})
 
         # ===== Load Testing Signals =====
-        idx = LABEL_VOWELS[sub_test][0].flatten() == args.vowel
+        if args.vowel == 4:
+            idx = LABEL_VOWELS[sub_test][0].flatten() != 3
+        else:
+            idx = LABEL_VOWELS[sub_test][0].flatten() == args.vowel
+
         X_Temp = FEAT_N[sub_test,0][idx,:]
         Y_Temp = LABEL[sub_test,0].flatten()[idx]
         num_signal = np.size(Y_Temp)
@@ -134,7 +140,10 @@ if __name__ == "__main__":
         C_TV = np.zeros(0)
         for sub_train in range(40):
             if sub_train != sub_test:
-                idx = LABEL_VOWELS[sub_train][0].flatten() == args.vowel
+                if args.vowel == 4:
+                    idx = LABEL_VOWELS[sub_train][0].flatten() != 3
+                else:
+                    idx = LABEL_VOWELS[sub_train][0].flatten() == args.vowel
                 x_s = FEAT_N[sub_train,0][idx,:]
                 y_s = LABEL[sub_train,0].flatten()[idx]
                 c_s = np.mean(np.mean(SUBJECT_SKINFOLD[sub_train,:]), axis=1)[idx]
