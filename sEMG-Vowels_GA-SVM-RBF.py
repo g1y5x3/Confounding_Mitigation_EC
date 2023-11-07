@@ -4,6 +4,7 @@ import sys
 import wandb
 import argparse
 import numpy as np
+import numpy.matlib
 import pandas as pd
 import scipy.io as sio
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-s', type=int, default=0, help="start of the subjects")
     parser.add_argument('-nsub', type=int, default=1, help="number of subjects to be executed")
-    parser.add_argument('-ngen', type=int, default=4, help="Number of generation")
+    parser.add_argument('-ngen', type=int, default=2, help="Number of generation")
     parser.add_argument('-pop', type=int, default=16, help='Population size')
     parser.add_argument('-perm', type=int, default=100, help='Permutation value')
     parser.add_argument('-thread', type=int, default=16, help='Number of threads')
@@ -104,6 +105,7 @@ if __name__ == "__main__":
         num_signal = np.shape(FEAT_N[sub_test,0])[0]    
         X_Temp = FEAT_N[sub_test,0]
         Y_Temp = LABEL[sub_test,0].flatten()
+        V_Temp = VOWEL[sub_test,0].flatten()
 
         num_leftout = round(leftout*num_signal)
         index_leftout = np.random.choice(range(num_signal), 
@@ -113,12 +115,14 @@ if __name__ == "__main__":
 
         X_Test = X_Temp[index_leftout,:]
         Y_Test = Y_Temp[index_leftout]
+        V_Test = V_Temp[index_leftout]
 
         index_include = np.arange(num_signal)
         index_include = np.delete(index_include, index_leftout)
         print("Included Training samples: ", index_include.size)
         X_include = X_Temp[index_include,:]
         Y_include = Y_Temp[index_include]
+        V_include = V_Temp[index_include]
 
         # ===== Load Traing Signals =====
         X_TV = np.zeros((0,48))
@@ -200,7 +204,7 @@ if __name__ == "__main__":
         res = minimize(problem,
                        algorithm,
                        ("n_gen", num_generation),
-                       callback = MyCallback(),
+                       callback = MyCallback(1),
                        verbose=False)
 
         print('Threads:', res.exec_time)
@@ -223,7 +227,11 @@ if __name__ == "__main__":
         wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
                    "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
                    "metrics/p_value_ga"   : p_value_ga[sub_test],
-                   "metrics/rsquare_ga"   : rsqrd_best,
-                   "metrics/predict_best" : predict_best})
+                   "metrics/rsquare_ga"   : rsqrd_best})
+
+        # create a table for predicted labels, true labels, and corresponding vowels
+        df = pd.DataFrame(data = [predict_best, Y_Test, V_Test],
+                          columns = ["predict", "true", "vowel"])
+
 
         run.finish()

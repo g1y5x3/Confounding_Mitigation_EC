@@ -134,8 +134,7 @@ class MyCallback(Callback):
                        "ga/train_acc" : tr_acc_best,
                        "ga/p_value"   : p_value_best,
                        "ga/rsquare"   : rsqrd_best,
-                       "ga/test_acc"  : te_acc_best,
-                       "ga/predict"   : predict_best})
+                       "ga/test_acc"  : te_acc_best})
 
         self.data["train_acc"].append(tr_acc_best)
         self.data["p_value"].append(p_value_best)
