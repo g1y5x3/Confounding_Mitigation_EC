@@ -3,18 +3,14 @@
 import sys
 import wandb
 import argparse
-import numpy.matlib
-import multiprocessing
 import numpy as np
 import pandas as pd
 import scipy.io as sio
-import matplotlib.pyplot as plt
 
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
-from mlconfound.plot import plot_null_dist, plot_graph
 from mlconfound.stats import partial_confound_test
 
 from statsmodels.formula.api import ols
@@ -25,8 +21,6 @@ from pymoo.core.problem import StarmapParallelization
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
-from pymoo.visualization.scatter import Scatter
-from pymoo.algorithms.base.genetic import GeneticAlgorithm
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
@@ -46,6 +40,7 @@ if __name__ == "__main__":
 
     FEAT_N           = DATA_ALL['FEAT_N']            # Normalized features
     LABEL            = DATA_ALL['LABEL']             # Labels
+    VOWEL            = DATA_ALL['LABEL_VOWEL']
     VFI_1            = DATA_ALL['SUBJECT_VFI']
     SUBJECT_ID       = DATA_ALL['SUBJECT_ID']        # Sujbect ID
     SUBJECT_SKINFOLD = DATA_ALL['SUBJECT_SKINFOLD']
@@ -214,6 +209,12 @@ if __name__ == "__main__":
         p_value_ga[sub_test] = res.algorithm.callback.data["p_value"][-1]
         testing_acc_ga[sub_test] = res.algorithm.callback.data["test_acc"][-1]
         rsqrd_best = res.algorithm.callback.data["rsquare"][-1]
+        predict_best = res.algorithm.callback.data["predict"][-1]
+
+        print(training_acc_ga)
+        print(p_value_ga)
+        print(testing_acc_ga)
+        print(rsqrd_best)
 
         print('Training Acc after GA: ', training_acc_ga[sub_test])
         print('P Value      after GA: ', p_value_ga[sub_test])
@@ -222,6 +223,7 @@ if __name__ == "__main__":
         wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
                    "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
                    "metrics/p_value_ga"   : p_value_ga[sub_test],
-                   "metrics/rsquare_ga"   : rsqrd_best})
+                   "metrics/rsquare_ga"   : rsqrd_best,
+                   "metrics/predict_best" : predict_best})
 
         run.finish()

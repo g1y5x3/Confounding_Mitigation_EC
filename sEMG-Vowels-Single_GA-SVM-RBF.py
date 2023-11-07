@@ -227,6 +227,12 @@ if __name__ == "__main__":
         p_value_ga[sub_test] = res.algorithm.callback.data["p_value"][-1]
         testing_acc_ga[sub_test] = res.algorithm.callback.data["test_acc"][-1]
         rsqrd_best = res.algorithm.callback.data["rsquare"][-1]
+        predict_best = res.algorithm.callback.data["predict"][-1]
+
+        print(training_acc_ga)
+        print(p_value_ga)
+        print(testing_acc_ga)
+        print(rsqrd_best)
 
         print('Training Acc after GA: ', training_acc_ga[sub_test])
         print('P Value      after GA: ', p_value_ga[sub_test])
@@ -235,6 +241,7 @@ if __name__ == "__main__":
         wandb.log({"metrics/train_acc_ga" : training_acc_ga[sub_test],
                    "metrics/test_acc_ga"  : testing_acc_ga[sub_test],
                    "metrics/p_value_ga"   : p_value_ga[sub_test],
-                   "metrics/rsquare_ga"   : rsqrd_best})
+                   "metrics/rsquare_ga"   : rsqrd_best,
+                   "metrics/predict_best" : predict_best})
 
         run.finish()

@@ -64,6 +64,7 @@ class MyCallback(Callback):
         self.data["test_acc"] = []
         self.data["p_value"] = []
         self.data["rsquare"] = []
+        self.data["predict"] = []
         self.log_flag = log_flag
 
     def notify(self, algorithm):
@@ -77,6 +78,7 @@ class MyCallback(Callback):
         p_value_best = 0 
         rsqrd_best   = 0 
         te_acc_best  = 0 
+        predict_best = []
         for t in range(np.shape(X)[0]):
             w = X[Xid[t],:]
 
@@ -109,11 +111,14 @@ class MyCallback(Callback):
             x_test_tf = algorithm.problem.x_test * fw
             temp_te_acc = algorithm.problem.clf.score(x_test_tf, 
                                                       algorithm.problem.y_test)
+
+            label_pred = algorithm.problem.clf.predict(x_test_tf)
+
             if self.log_flag:
                 wandb.log({"pareto-front/train_acc-{}".format(algorithm.n_gen): temp_tr_acc,
-                        "pareto-front/rsquare-{}".format(algorithm.n_gen)  : temp_rsqrd,
-                        "pareto-front/p_value-{}".format(algorithm.n_gen)  : temp_p_value,
-                        "pareto-front/test_acc-{}".format(algorithm.n_gen) : temp_te_acc})
+                           "pareto-front/rsquare-{}".format(algorithm.n_gen)  : temp_rsqrd,
+                           "pareto-front/p_value-{}".format(algorithm.n_gen)  : temp_p_value,
+                           "pareto-front/test_acc-{}".format(algorithm.n_gen) : temp_te_acc})
 
             if temp_te_acc > acc_best:
                 acc_best = temp_te_acc 
@@ -122,15 +127,18 @@ class MyCallback(Callback):
                 p_value_best = temp_p_value
                 rsqrd_best   = temp_rsqrd
                 te_acc_best  = temp_te_acc
+                predict_best = algorithm.problem.clf.predict(x_test_tf)
 
         if self.log_flag:
             wandb.log({"ga/n_gen"     : algorithm.n_gen,
-                    "ga/train_acc" : tr_acc_best,
-                    "ga/p_value"   : p_value_best,
-                    "ga/rsquare"   : rsqrd_best,
-                    "ga/test_acc"  : te_acc_best})
+                       "ga/train_acc" : tr_acc_best,
+                       "ga/p_value"   : p_value_best,
+                       "ga/rsquare"   : rsqrd_best,
+                       "ga/test_acc"  : te_acc_best,
+                       "ga/predict"   : predict_best})
 
         self.data["train_acc"].append(tr_acc_best)
         self.data["p_value"].append(p_value_best)
         self.data["rsquare"].append(rsqrd_best)  
         self.data["test_acc"].append(te_acc_best)
+        self.data["predict"].append(predict_best)
