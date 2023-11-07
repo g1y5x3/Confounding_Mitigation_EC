@@ -237,6 +237,7 @@ if __name__ == "__main__":
         df = pd.DataFrame(data = np.array([predict_best; Y_Test; V_Test]),
                           columns = ["predict", "true", "vowel"])
 
-        wandb.Table(dataframe=df)
+        label_table = wandb.Table(dataframe=df)
+        wandb.log({"prediction_table": label_table})
 
         run.finish()
