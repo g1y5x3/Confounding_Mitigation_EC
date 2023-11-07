@@ -233,5 +233,6 @@ if __name__ == "__main__":
         df = pd.DataFrame(data = [predict_best, Y_Test, V_Test],
                           columns = ["predict", "true", "vowel"])
 
+        wandb.Table(dataframe=df)
 
         run.finish()
