@@ -230,7 +230,11 @@ if __name__ == "__main__":
                    "metrics/rsquare_ga"   : rsqrd_best})
 
         # create a table for predicted labels, true labels, and corresponding vowels
-        df = pd.DataFrame(data = [predict_best, Y_Test, V_Test],
+        print(predict_best.shape)
+        print(Y_Test.shape)
+        print(V_Test.shape)
+
+        df = pd.DataFrame(data = np.array([predict_best; Y_Test; V_Test]),
                           columns = ["predict", "true", "vowel"])
 
         wandb.Table(dataframe=df)
